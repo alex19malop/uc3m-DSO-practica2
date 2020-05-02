@@ -123,6 +123,8 @@ int createLn(char *fileName, char *linkName);
  */
 int removeLn(char *linkName);
 
+void printSystem();
+
 
 
 #endif
