@@ -308,7 +308,27 @@ int removeFile(char *fileName)
  */
 int openFile(char *fileName)
 {
-	return -2;
+    if(fileExist(fileName)==-1){
+        return -1;
+    }
+    int inodo_id;
+    // buscar el inodo asociado al nombre
+    inodo_id = busca_inodo(fileName);
+    printf("El inodo_i es: %d\n",inodo_id);
+     if (inodo_id < 0){
+        return -2;
+    }
+    if (inodo_id < 0){
+        return inodo_id;
+    }
+    // Controlo que no esté ya abierto
+    if (inodos[inodo_id].open == 1){
+        return -1;
+    }
+    // iniciar sesión de trabajo
+    inodos[inodo_id].pos = 0;
+    inodos[inodo_id].open = 1;
+    return inodo_id; 
 }
 
 /*
