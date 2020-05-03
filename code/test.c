@@ -120,7 +120,7 @@ int main()
 	/* Prueba en la cual no hay inodos disponibles.
 	Para ello llenaremos el mapa de inodos, por lo que createFile deberá devolver -2 */
 
-	/*fullInodeMap();
+	/*fullInodeMap(); //Pone a 1 a todas las posiciones del mapa de inodos
 	int a;
 	a = createFile("/test1.txt");
 
@@ -140,7 +140,7 @@ int main()
 	/* Prueba en la cual no hay bloques disponibles.
 	Para ello llenaremos el mapa de bloques, por lo que createFile deberá devolver -2 */
 
-	fullBlockMap();
+	/*fullBlockMap();
 	int a;
 	a = createFile("/test1.txt");
 
@@ -152,7 +152,7 @@ int main()
 	else {
 		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.4.4 ", ANSI_COLOR_RED, "FAIL\n", ANSI_COLOR_RESET);
 		return -1;
-	}
+	}*/
 
 	/****************************************************************
 	*                                                               *
@@ -176,7 +176,157 @@ int main()
 		return -1;
 	}
 	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.5.1 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
-	*/
+	printSystem();*/
+
+	/****************************************************************
+	*						 TEST F1.5.2 			 			    *
+	****************************************************************/
+	/* Prueba basica de creacion de 4 archivos y eliminacion del un archivo inexistente , debe de devolver -1 si el fichero
+	 no se ha encontrado */
+	/*int a,b,c,d;
+	a = createFile("/test1.txt");
+	b = createFile("/test2.txt");
+	c = createFile("/test3.txt");
+	d = createFile("/test4.txt");
+	ret = removeFile("/test5.txt");
+
+	if (ret != -1 || a != 0 || b != 0 || c !=0 || d != 0)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.5.2 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.5.2 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+	printSystem();*/
+
+
+
+
+	/****************************************************************
+	*                                                               *
+	*                           TEST F1.6                           *
+	*                                                               *
+	*****************************************************************
+	*						  TEST F1.6.1 						    *
+	****************************************************************/
+    /* Prueba basica para abrir un archivo existente */
+
+	int x,y;
+	createFile("/test1.txt");
+	createFile("/test2.txt");
+	x = openFile("/test1.txt");
+	y = openFile("/test2.txt");
+	printSystem();
+	if (x == -1 || x == -2 || y == -1 || y == -2)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.6.1  ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.6.1  ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+
+	///////
+
+	/****************************************************************
+	*						  TEST F1.6.2						    *
+	****************************************************************/
+    /* Prueba basica para abrir un archivo ya abierto anteriormente */
+
+	int z;
+	createFile("/test1.txt");
+	openFile("/test1.txt");
+	z = openFile("/test1.txt");
+	if (z == -2)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.6.2 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+
+	}
+	else {
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.6.2 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+
+	/****************************************************************
+	*						  TEST F1.6.3						    *
+	****************************************************************/
+    /* Prueba basica para abrir un archivo inexistente */
+
+	int p;
+
+	p = openFile("/test7.txt");
+	if (p == -1)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.6.3 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+
+	}
+	else{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.6.3 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	
+	///////
+
+	/****************************************************************
+	*                                                               *
+	*                           TEST F1.7                           *
+	*                                                               *
+	*****************************************************************
+	*						  TEST F1.7.1 						    *
+	****************************************************************/
+    /* Prueba basica para cerrar un descriptor de fichero */
+
+	int e,f;
+	createFile("/test1.txt");
+	createFile("/test2.txt");
+	e = closeFile(0);
+	f = closeFile(1);
+	printSystem();
+	if (e == -1 || f == -1)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.7.1  ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.7.1  ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+
+	///////
+
+	/****************************************************************
+	*						  TEST F1.7.2 						    *
+	****************************************************************/
+    /* Prueba basica para cerrar un descriptor de fichero ya cerrado o no inicializado*/
+
+	int g;
+
+	g = closeFile(2);
+	if (g == -1)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.7.2 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+
+	}
+	else{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.7.2 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+
+	///////
+
+	/****************************************************************
+	*						  TEST F1.7.3 						    *
+	****************************************************************/
+    /* Prueba basica para cerrar descriptor de fichero fuera de inodo */
+
+	int h;
+
+	h = closeFile(60);
+	if (h == -1)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.7.3 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+
+	}
+	else{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.7.3 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+
+	
 
 
 	/****************************************************************

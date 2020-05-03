@@ -17,12 +17,14 @@
 #include "filesystem/blocks_cache.h"
 #include <string.h>
 #include <math.h>
+#include <stdlib.h>
 
 
 /*Variables globales*/
 superbloque sbloque;
 mapas mp;
 inodo inodos[48];
+
 
 
 
@@ -75,7 +77,7 @@ int mkFS(long deviceSize)
 		if(i < 38){
 			bitmap_setbit(mp.d_map,i,0);
 		}
-		if(i==39 || i==38 ||i==0 || i==1){
+		if(i==39 || i==38 ||i==0 || i==1 || i==2){
 			bitmap_setbit(mp.d_map,i,1);
 		}
 
@@ -167,7 +169,7 @@ int ialloc ( void )
  		}
  	}
  return -1;
-}
+} 
 
 
   
@@ -198,19 +200,19 @@ int fileExist(char *fileName) {
 int isInodeFull() {
     for (int i = 0; i < 48; i++){
         if (bitmap_getbit(mp.i_map,i) == 0) {
-            return -2;
+            return 0;
         }
     }
-    return 0;
+    return -2;
 }
 
 int isBlocksFull() {
-    for (int i = 0; i < 40; i++){
+    for (int i = 0; i < 38; i++){
         if (bitmap_getbit(mp.d_map,i) == 0) {
-            return -2;
+            return 0;
         }
     }
-    return 0;
+    return -2;
 }
 
 /*
@@ -263,6 +265,14 @@ int busca_inodo(char *fileName) {
 	 
 }
 
+/*void cleanName(int i) {
+	for (int j = 0; j < 32; j++)
+	{
+		charcpy(inodos[i].nombre[j],'');
+	}
+	
+}*/
+
 /*
  * @brief	Deletes a file, provided it exists in the file system.
  * @return	0 if success, -1 if the file does not exist, -2 in case of error..
@@ -273,17 +283,21 @@ int removeFile(char *fileName)
 	if(i == -1){
 		return -1;
 	}
-
 	//Bitmap de inodos, el encontrado a 0. 
 	bitmap_setbit(mp.i_map,i,0);
-
 	//Inodo encontrado vuelva a la normalidad
 	inodos[i].tipo = 1;
 	inodos[i].pos = 0;
-	inodos[i].open = 0;
+	inodos[i].open = 0; 
 	inodos[i].integridad = 0;
-	strcpy(inodos[i].nombre,"");
+	printf("mi nombre es: %s \n", inodos[i].nombre);
+	strncpy(inodos[i].nombre,"",32);
+	//cleanName(i);
+	printf("mi nombre es: %s \n", inodos[i].nombre);
 	for (int j = 0; j < 5; j++){
+		if(inodos[i].inodosContenidos[j]!=0){
+			bitmap_setbit(mp.d_map,inodos[i].inodosContenidos[j],0);
+		}
 		inodos[i].inodosContenidos[j] = 0;
 	}
 	inodos[i].tamanyo = 0;
@@ -291,12 +305,6 @@ int removeFile(char *fileName)
 	for (int j = 0; j < 52; j++)
 	{  
 		inodos[i].relleno[j] = 0;
-	}
-
-	//Si no hay mas con ese nombre de archivo quita el bloque de Bitmap de bloques
-	i = busca_inodo(fileName);
-	if(i == -1){
-		bitmap_setbit(mp.d_map,i,0);
 	}
 
 	return	0;
@@ -308,22 +316,18 @@ int removeFile(char *fileName)
  */
 int openFile(char *fileName)
 {
-    if(fileExist(fileName)==-1){
+    if(fileExist(fileName)==0){
         return -1;
     }
     int inodo_id;
     // buscar el inodo asociado al nombre
     inodo_id = busca_inodo(fileName);
-    printf("El inodo_i es: %d\n",inodo_id);
      if (inodo_id < 0){
         return -2;
     }
-    if (inodo_id < 0){
-        return inodo_id;
-    }
     // Controlo que no esté ya abierto
     if (inodos[inodo_id].open == 1){
-        return -1;
+        return -2;
     }
     // iniciar sesión de trabajo
     inodos[inodo_id].pos = 0;
@@ -337,8 +341,20 @@ int openFile(char *fileName)
  */
 int closeFile(int fileDescriptor)
 {
-	return -1;
+    // comprobar descriptor válido
+    if ((fileDescriptor < 0) || (fileDescriptor > sbloque.numInodos - 1)){
+        return -1;
+    }
+    // comprobar que ya está cerrado
+    if (inodos[fileDescriptor].open == 0){
+        return -1;
+    }
+    // cerrar sesión de trabajo
+    inodos[fileDescriptor].pos = 0;
+    inodos[fileDescriptor].open = 0;
+    return 0; 
 }
+  
 
 /*
  * @brief	Reads a number of bytes from a file and stores them in a buffer.
