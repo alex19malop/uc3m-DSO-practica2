@@ -10,7 +10,7 @@
  *
  */
 
-
+ 
 #include "filesystem/filesystem.h" // Headers for the core functionality
 #include "filesystem/auxiliary.h"  // Headers for auxiliary functions
 #include "filesystem/metadata.h"   // Type and structure declaration of the file system
@@ -44,7 +44,7 @@ int mkFS(long deviceSize)
 	
 	for (int i = 0; i < 505; i++)
 	{
-		sbloque.padding[i] = 0;
+		sbloque.padding[i] = 0; 
 	}
   
 
@@ -66,7 +66,7 @@ int mkFS(long deviceSize)
 		}
 	} 
 
-	for (int i = 0; i < 2037; i++)
+	for (int i = 0; i < 2037; i++)  
 	{
 		if(i < 48){
 			bitmap_setbit(mp.i_map,i,0);
@@ -195,6 +195,24 @@ int fileExist(char *fileName) {
 	
 }
 
+int isInodeFull() {
+    for (int i = 0; i < 48; i++){
+        if (bitmap_getbit(mp.i_map,i) == 0) {
+            return -2;
+        }
+    }
+    return 0;
+}
+
+int isBlocksFull() {
+    for (int i = 0; i < 40; i++){
+        if (bitmap_getbit(mp.d_map,i) == 0) {
+            return -2;
+        }
+    }
+    return 0;
+}
+
 /*
  * @brief	Creates a new file, provided it it doesn't exist in the file system.
  * @return	0 if success, -1 if the file already exists, -2 in case of error.
@@ -204,6 +222,9 @@ int createFile(char *fileName)
 	if(fileExist(fileName)==-1){
 		return -1;
 	}
+	if (isInodeFull() == -2 || isBlocksFull() == -2) {
+        return -2;
+    }
 	int b_id, inodo_id ;
  	inodo_id = ialloc() ;
 	printf("El inodo_i es: %d\n",inodo_id);
@@ -219,7 +240,6 @@ int createFile(char *fileName)
 		ifree(inodo_id); 
 		return -2 ;
 	}
-	printf("VERGA %d\n",inodo_id);
  	inodos[inodo_id].tipo = 1 ; // FICHERO
  	strcpy(inodos[inodo_id].nombre, fileName);
  	inodos[inodo_id].inodosContenidos[0] = b_id ;
@@ -231,13 +251,55 @@ int createFile(char *fileName)
  	return 0; 
 }
 
+
+
+int busca_inodo(char *fileName) {
+	for (int i = 0; i < 48; i++) {
+		if(strcmp(inodos[i].nombre, fileName)==0) {
+			return i; 
+		}
+	}
+	return -1;
+	 
+}
+
 /*
  * @brief	Deletes a file, provided it exists in the file system.
  * @return	0 if success, -1 if the file does not exist, -2 in case of error..
  */
 int removeFile(char *fileName)
 {
-	return -2;
+	int i = busca_inodo(fileName);
+	if(i == -1){
+		return -1;
+	}
+
+	//Bitmap de inodos, el encontrado a 0. 
+	bitmap_setbit(mp.i_map,i,0);
+
+	//Inodo encontrado vuelva a la normalidad
+	inodos[i].tipo = 1;
+	inodos[i].pos = 0;
+	inodos[i].open = 0;
+	inodos[i].integridad = 0;
+	strcpy(inodos[i].nombre,"");
+	for (int j = 0; j < 5; j++){
+		inodos[i].inodosContenidos[j] = 0;
+	}
+	inodos[i].tamanyo = 0;
+	inodos[i].cantidadBloquesOcupados = 0;
+	for (int j = 0; j < 52; j++)
+	{  
+		inodos[i].relleno[j] = 0;
+	}
+
+	//Si no hay mas con ese nombre de archivo quita el bloque de Bitmap de bloques
+	i = busca_inodo(fileName);
+	if(i == -1){
+		bitmap_setbit(mp.d_map,i,0);
+	}
+
+	return	0;
 }
 
 /*
@@ -342,6 +404,20 @@ int removeLn(char *linkName)
     return -2;
 }
 
+void fullInodeMap() {
+    for (int i = 0; i < 48; i++)
+    {
+        bitmap_setbit(mp.i_map,i,1);
+    }
+}
+ 
+void fullBlockMap() {
+    for (int i = 0; i < 38; i++)
+    {
+        bitmap_setbit(mp.d_map,i,1);
+    }
+}
+
 
 void printSystem() {
 	printf("Superbloque:\nNumero magico:%i\nNumBloquesMapaBits:%i\nNumInodos:%i\nPrimerInodo:%i\nNumBloquesDatos:%i\nPrimerBloqueDatos:%i\nTamDispositivo:%i\n\n\n", sbloque.numMagico, sbloque.numBloquesMapaBits, sbloque.numInodos, sbloque.primerInodo, sbloque.numBloquesDatos, sbloque.primerBloqueDatos, sbloque.tamDispositivo);
@@ -357,7 +433,7 @@ void printSystem() {
 	}
 
 	printf("\n\nMapa de bits de bloques\n");
-	for (int i = 0; i < 40; i++){
+	for (int i = 0; i < 38; i++){
 		if (bitmap_getbit(mp.d_map,i) == 0) {
 			printf("%d",0);
 		}

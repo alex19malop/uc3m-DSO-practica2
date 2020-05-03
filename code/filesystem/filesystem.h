@@ -12,7 +12,7 @@
  *
  */
 
-
+ 
 #ifndef _USER_H_
 #define _USER_H_
 
@@ -124,6 +124,10 @@ int createLn(char *fileName, char *linkName);
 int removeLn(char *linkName);
 
 void printSystem();
+
+void fullInodeMap();
+
+void fullBlockMap();
 
 
 
