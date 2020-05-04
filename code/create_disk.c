@@ -27,8 +27,8 @@ int main ( int argc, char *argv[] )
 	char dummy_block[BLOCK_SIZE];
 
 	if(argc != 2){
-		printf("ERROR: Incorrect number of arguments:\n");
-		printf("Syntax: ./create_disk <num_blocks>\n");
+		fprintf(stdout, "ERROR: Incorrect number of arguments:\n");
+		fprintf(stdout, "Syntax: ./create_disk <num_blocks>\n");
 		return -1;
 	}
 

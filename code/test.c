@@ -29,7 +29,6 @@ int main()
 {
 	int ret;
 
-	///////
 
 	/****************************************************************
 	*						 TEST F1.1   			 			    *
@@ -43,25 +42,43 @@ int main()
 		return -1;
 	}
 	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.1 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+	
 
-	//printSystem();
-	///////
 
 	/****************************************************************
-	*						 TEST F1.2   			 			    *
+	*                                                               *
+	*                           TEST F1.2                           *
+	*                                                               *
+	*****************************************************************
+	*						 TEST F1.2.1   			 			    *
 	****************************************************************/
 	/* Prueba basica para montar un sistema de ficheros */
 
 	ret = mountFS();
 	if (ret != 0)
 	{
-		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.2 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.2.1 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
 		return -1;
 	}
-	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.2 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.2.1 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
 
-	//printSystem();
-	///////
+
+	/****************************************************************
+	*						 TEST F1.2.2   			 			    *
+	****************************************************************/
+	/* Prueba para montar un sistema de ficheros sin haber creado el sistema
+	de ficheros */
+
+	/*ret = mountFS();
+	if (ret != -1)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.2.2 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.2.2 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+
+*/
+
 
 	/****************************************************************
 	*                                                               *
@@ -88,8 +105,8 @@ int main()
 	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.4.1 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
 
 
-	*/
-
+	printSystem();
+*/
 	/****************************************************************
 	*						TEST F1.4.2 						    *
 	****************************************************************/
@@ -161,8 +178,9 @@ int main()
 	*****************************************************************
 	*						 TEST F1.5.1 			 			    *
 	****************************************************************/
-	/* Prueba basica de creacion de 4 archivos y eliminacion del primero de ellos, debe de devolver 0 si el fichero
-	 ha sido eliminado correctamente */
+	/* Prueba basica de creacion de 4 archivos y eliminacion del primero de ellos,
+	debe de devolver 0 si el fichero ha sido eliminado correctamente */
+
 	/*int a,b,c,d;
 	a = createFile("/test1.txt");
 	b = createFile("/test2.txt");
@@ -181,8 +199,9 @@ int main()
 	/****************************************************************
 	*						 TEST F1.5.2 			 			    *
 	****************************************************************/
-	/* Prueba basica de creacion de 4 archivos y eliminacion del un archivo inexistente , debe de devolver -1 si el fichero
-	 no se ha encontrado */
+	/* Prueba basica de creacion de 4 archivos y eliminacion del un archivo inexistente,
+	debe de devolver -1 si el fichero no se ha encontrado */
+
 	/*int a,b,c,d;
 	a = createFile("/test1.txt");
 	b = createFile("/test2.txt");
@@ -196,9 +215,8 @@ int main()
 		return -1;
 	}
 	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.5.2 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
-	printSystem();*/
 
-
+*/
 
 
 	/****************************************************************
@@ -210,7 +228,7 @@ int main()
 	****************************************************************/
     /* Prueba basica para abrir un archivo existente */
 
-	int x,y;
+	/*int x,y;
 	createFile("/test1.txt");
 	createFile("/test2.txt");
 	x = openFile("/test1.txt");
@@ -223,14 +241,14 @@ int main()
 	}
 	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.6.1  ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
 
-	///////
+	*/
 
 	/****************************************************************
 	*						  TEST F1.6.2						    *
 	****************************************************************/
     /* Prueba basica para abrir un archivo ya abierto anteriormente */
 
-	int z;
+	/*int z;
 	createFile("/test1.txt");
 	openFile("/test1.txt");
 	z = openFile("/test1.txt");
@@ -242,14 +260,14 @@ int main()
 	else {
 		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.6.2 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
 		return -1;
-	}
+	}*/
 
 	/****************************************************************
 	*						  TEST F1.6.3						    *
 	****************************************************************/
     /* Prueba basica para abrir un archivo inexistente */
 
-	int p;
+	/*int p;
 
 	p = openFile("/test7.txt");
 	if (p == -1)
@@ -260,8 +278,8 @@ int main()
 	else{
 		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.6.3 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
 		return -1;
-	}
-	
+	}*/
+
 	///////
 
 	/****************************************************************
@@ -273,7 +291,7 @@ int main()
 	****************************************************************/
     /* Prueba basica para cerrar un descriptor de fichero */
 
-	int e,f;
+	/*int e,f;
 	createFile("/test1.txt");
 	createFile("/test2.txt");
 	e = closeFile(0);
@@ -285,15 +303,15 @@ int main()
 		return -1;
 	}
 	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.7.1  ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+	*/
 
-	///////
 
 	/****************************************************************
 	*						  TEST F1.7.2 						    *
 	****************************************************************/
     /* Prueba basica para cerrar un descriptor de fichero ya cerrado o no inicializado*/
 
-	int g;
+	/*int g;
 
 	g = closeFile(2);
 	if (g == -1)
@@ -304,45 +322,106 @@ int main()
 	else{
 		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.7.2 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
 		return -1;
-	}
+	}*/
 
-	///////
 
 	/****************************************************************
 	*						  TEST F1.7.3 						    *
 	****************************************************************/
     /* Prueba basica para cerrar descriptor de fichero fuera de inodo */
 
-	int h;
+	/*int h;
 
 	h = closeFile(60);
 	if (h == -1)
 	{
 		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.7.3 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
- 
+
 	}
 	else{
 		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.7.3 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
 		return -1;
-	}
+	}*/
 
-	
+	/****************************************************************
+	*                                                               *
+	*                           TEST F1.9                           *
+	*                                                               *
+	*****************************************************************
+	*						  TEST F1.9.1 						    *
+	****************************************************************/
+
+		//ret = createFile("/test1.txt");
+		createFile("/test1.txt");
+		createFile("/test2.txt");
+		createFile("/test3.txt");
+		createFile("/test4.txt");
+		int fd = openFile("/test1.txt");
+		char *buffer1 = "esto es una prueba"; 
+		ret = writeFile(fd, buffer1, strlen(buffer1)+1);
+		closeFile(fd);
+
+		if (ret == -1)
+	    {
+	    	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.9.1 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+	    	return -1;
+	    }
+	    fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.9.1 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+
+		printSystem();
+
+
 
 
 	/****************************************************************
-	*						  TEST F1.3 						    *
+	*                                                               *
+	*                           TEST F1.3                           *
+	*                                                               *
+	*****************************************************************
+	*						  TEST F1.3.1 						    *
 	****************************************************************/
-    /* Prueba basica para montar un sistema de ficheros */
+    /* Prueba basica para desmontar un sistema de ficheros */
 
 	ret = unmountFS();
 	if (ret != 0)
 	{
-		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.3 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.3.1 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
 		return -1;
 	}
-	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.3 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.3.1 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
 
-	///////
+	/****************************************************************
+	*						  TEST F1.3.2 						    *
+	****************************************************************/
+	/*Prueba para desmontar un sistema del fichero, el cual no ha sido creado previamente,
+	por lo que debería devolver -1 para marcar el error */
+
+	/*ret = unmountFS();
+	if (ret != -1)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.3.2 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.3.2 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+*/
+
+	/****************************************************************
+	*						  TEST F1.3.3						    *
+	****************************************************************/
+	/*Prueba para desmontar un sistema del fichero, el cual SI ha sido creado previamente,
+	pero no ha sido montado, por lo que debería devolver -1 para marcar el error.
+	Para realizar esta prueba es necesario comentar todas las pruebas anteriores. */
+
+	/*ret = mkFS(DEV_SIZE);
+	ret = unmountFS();
+	if (ret != -1)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.3.3 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.3.3 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+
+	*/
 
 	return 0;
 }

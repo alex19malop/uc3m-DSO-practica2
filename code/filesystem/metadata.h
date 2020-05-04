@@ -48,8 +48,8 @@ typedef struct superbloque
  
 typedef struct mapas{
   char i_map[6];            //[48]; 48 bits         //[num_inodos = 48]
-  char d_map[5];               //[38];   40 bloques,solo se necesitan 38 los ultimos se van a poner siempre a 1      //[300 (maximo teorico de tamanio) / 8 (bits en 1 byte) = 38]
-  char padding[2037];    /* para que llegue a 2048 */ 
+  char d_map[38];               //[38];  //[300 (maximo teorico de tamanio) / 8 (bits en 1 byte) = 38] sonn los bloques de datos
+  char padding[2004];    /* para que llegue a 2048 */ 
 }mapas;
  
 
@@ -82,6 +82,6 @@ typedef struct inodo{
   /*Bloques que ocupan los datos del archivo del inodo*/                                                   
   int cantidadBloquesOcupados;   
 
-  /* El tamaño del padding es 51 */
-  char relleno[51];                                        
+  /* El tamaño del padding es 47 */
+  char relleno[47];                                        
 } inodo;

@@ -24,8 +24,8 @@
 superbloque sbloque;
 mapas mp;
 inodo inodos[48];
-int mkFS_done;
-int mountFS_done;
+int mkFS_done = -1;
+int mountFS_done = -1;
 
 
 
@@ -55,11 +55,10 @@ int mkFS(long deviceSize)
 	{
 		inodos[i].tipo = 1;
 		inodos[i].pos = 0;
-		inodos[i].open = 0;
+		inodos[i].open = 0;  
 		inodos[i].integridad = 0;
-		strcpy(inodos[i].nombre,"");
 		for (int j = 0; j < 5; j++){
-			inodos[i].inodosContenidos[j] = 0;
+			inodos[i].inodosContenidos[j] = -1;
 		}
 		inodos[i].tamanyo = 0;
 		inodos[i].cantidadBloquesOcupados = 0;
@@ -78,12 +77,16 @@ int mkFS(long deviceSize)
 		if(i < 38){
 			bitmap_setbit(mp.d_map,i,0);
 		}
-		if(i==39 || i==38 ||i==0 || i==1 || i==2|| i==3|| i==4){
-			bitmap_setbit(mp.d_map,i,1);
-		}
 
 		mp.padding[i] = 0;
 	}
+
+	for (int i = 0; i < 48; i++) 
+	{
+		// Escribe en esa dir de memoria el valor de en medio en todo ese tamanio
+		memset(&(inodos[i].nombre), 0, 32+1);
+	}
+	
 
 	//escribir el superbloque
 	bwrite(DEVICE_IMAGE,0,(char*)(&sbloque));
@@ -93,9 +96,9 @@ int mkFS(long deviceSize)
 	bwrite(DEVICE_IMAGE,2,(char*)(&inodos));
 	bwrite(DEVICE_IMAGE,3,(char*)(&inodos+BLOCK_SIZE));
 	bwrite(DEVICE_IMAGE,4,(char*)(&inodos+BLOCK_SIZE*2));
-	printf("tamanio de inodo %li\n",sizeof(inodo));
-	printf("tamanio de superbloque %li\n",sizeof(superbloque));
-	printf("tamanio de mapas %li\n",sizeof(mapas));
+	fprintf(stdout, "tamanio de inodo %li\n",sizeof(inodo));
+	fprintf(stdout, "tamanio de superbloque %li\n",sizeof(superbloque));
+	fprintf(stdout, "tamanio de mapas %li\n",sizeof(mapas));
 	mkFS_done = 0;
  	return 0;
 }
@@ -117,7 +120,7 @@ int mountFS(void)
 	bread(DEVICE_IMAGE,2,(char*)(&inodos));
 	bread(DEVICE_IMAGE,3,(char*)(&inodos+BLOCK_SIZE));
 	bread(DEVICE_IMAGE,4,(char*)(&inodos+BLOCK_SIZE*2));
-	printf("magic number %d\n",sbloque.numMagico);
+	fprintf(stdout, "magic number %d\n",sbloque.numMagico);
 	mountFS_done = 0;
 	return 0; 
 }
@@ -139,7 +142,7 @@ int unmountFS(void)
 	bwrite(DEVICE_IMAGE,2,(char*)(&inodos));
 	bwrite(DEVICE_IMAGE,3,(char*)(&inodos+BLOCK_SIZE));
 	bwrite(DEVICE_IMAGE,4,(char*)(&inodos+BLOCK_SIZE*2));
-	printf("magic number %d\n",sbloque.numMagico);
+	fprintf(stdout, "magic number %d\n",sbloque.numMagico);
  	return 0;
 }
 
@@ -165,7 +168,7 @@ int ialloc ( void )
 			inodos[i].integridad = 0;
 			strcpy(inodos[i].nombre,"");
 			for (int j = 0; j < 5; j++){
-				inodos[i].inodosContenidos[j] = 0;
+				inodos[i].inodosContenidos[j] = -1;
 			}
 			inodos[i].tamanyo = 0;
 			inodos[i].cantidadBloquesOcupados = 0;
@@ -183,7 +186,7 @@ int ialloc ( void )
   
 int alloc ( void )
 {
- 	for (int i=0; i<(ceil(sbloque.tamDispositivo/BLOCK_SIZE) - 5); i++)
+ 	for (int i=0; i < (int)(ceil((double)sbloque.tamDispositivo/BLOCK_SIZE) - 5); i++)
  	{
 		if (bitmap_getbit(mp.d_map,i) == 0) {
 			bitmap_setbit(mp.d_map,i,1);	// bloque ocupado ahora
@@ -237,14 +240,14 @@ int createFile(char *fileName)
     }
 	int b_id, inodo_id ;
  	inodo_id = ialloc() ;
-	printf("El inodo_i es: %d\n",inodo_id);
+	fprintf(stdout, "El inodo_i es: %d\n",inodo_id);
 
  	if (inodo_id < 0) {
 		return -2 ;
 	}
 	
  	b_id = alloc();
-	printf("El b_id es: %d\n",b_id);
+	fprintf(stdout, "El b_id es: %d\n",b_id);
 
  	if (b_id < 0) { 
 		ifree(inodo_id); 
@@ -273,14 +276,6 @@ int busca_inodo(char *fileName) {
 	 
 }
 
-/*void cleanName(int i) {
-	for (int j = 0; j < 32; j++)
-	{
-		charcpy(inodos[i].nombre[j],'');
-	}
-	
-}*/
-
 /*
  * @brief	Deletes a file, provided it exists in the file system.
  * @return	0 if success, -1 if the file does not exist, -2 in case of error..
@@ -291,29 +286,17 @@ int removeFile(char *fileName)
 	if(i == -1){
 		return -1;
 	}
+
 	//Bitmap de inodos, el encontrado a 0. 
 	bitmap_setbit(mp.i_map,i,0);
 	//Inodo encontrado vuelva a la normalidad
 	inodos[i].tipo = 1;
-	inodos[i].pos = 0;
-	inodos[i].open = 0; 
-	inodos[i].integridad = 0;
-	printf("mi nombre es: %s \n", inodos[i].nombre);
-	strncpy(inodos[i].nombre,"",32);
-	//cleanName(i);
-	printf("mi nombre es: %s \n", inodos[i].nombre);
-	for (int j = 0; j < 5; j++){
-		if(inodos[i].inodosContenidos[j]!=0){
-			bitmap_setbit(mp.d_map,inodos[i].inodosContenidos[j],0);
-		}
-		inodos[i].inodosContenidos[j] = 0;
+	for (int j = 0; j < 5; j++){  
+		bitmap_setbit(mp.d_map,inodos[i].inodosContenidos[j],0);
+		inodos[i].inodosContenidos[j] = -1;
 	}
-	inodos[i].tamanyo = 0;
-	inodos[i].cantidadBloquesOcupados = 0;
-	for (int j = 0; j < 52; j++)
-	{  
-		inodos[i].relleno[j] = 0;
-	}
+	// Escribe en esa dir de memoria el valor de en medio en todo ese tamanio
+	memset(&(inodos[i].nombre), 0, 32+1);
 
 	return	0;
 }
@@ -324,7 +307,7 @@ int removeFile(char *fileName)
  */
 int openFile(char *fileName)
 {
-    if(fileExist(fileName)==0){ 
+    if(fileExist(fileName) == 0){ 
         return -1;
     }
     int inodo_id;
@@ -342,6 +325,9 @@ int openFile(char *fileName)
     inodos[inodo_id].open = 1;
     return inodo_id; 
 }
+
+
+
 
 /*
  * @brief	Closes a file.
@@ -364,7 +350,7 @@ int closeFile(int fileDescriptor)
 }
   
 
-/*
+/* 
  * @brief	Reads a number of bytes from a file and stores them in a buffer.
  * @return	Number of bytes properly read, -1 in case of error.
  */
@@ -377,9 +363,87 @@ int readFile(int fileDescriptor, void *buffer, int numBytes)
  * @brief	Writes a number of bytes from a buffer and into a file.
  * @return	Number of bytes properly written, -1 in case of error.
  */
+//Escribe a partir del punterp de posición interno
 int writeFile(int fileDescriptor, void *buffer, int numBytes)
 {
-	return -1;
+	//Si el inodo donde se quiere escribir no tiene fichero
+	if (bitmap_getbit(mp.i_map,fileDescriptor) == 0) {
+		return -1; 
+	}
+	/* Ajustar numBytes al tamaño máximo del fichero */
+	if ((inodos[fileDescriptor].pos + numBytes) > MAX_FILE_SIZE) {
+		numBytes = MAX_FILE_SIZE - inodos[fileDescriptor].pos;
+	}
+
+	if (numBytes <= 0) {
+		return 0;
+	}
+
+	fprintf(stdout, "[WF] numBytes: %i\n", numBytes);
+	// Calcular numero de bloques que se van escribir
+	int bloques_escribir = (int) ceil(((double)numBytes/BLOCK_SIZE));
+
+	// Eliminar bloques que ya no van a ser usados, cuando escribes sobreescribes lo que esta despues de la posicion
+	int posicion = inodos[fileDescriptor].pos;
+	int aux_bloque = floor(posicion/BLOCK_SIZE);
+	for (int i = aux_bloque + 1; i < inodos[fileDescriptor].cantidadBloquesOcupados; i++)
+	{
+		bitmap_setbit(mp.d_map,inodos[fileDescriptor].inodosContenidos[i], 0);
+	}
+	
+
+	// Comenzando desde el bloque de la posición actual hasta el último bloque se va a escribir
+		// Obtener el bloque asociado a la posición actual del fichero
+		// Si no tiene bloque asociado, asignar uno nuevo
+	char block[BLOCK_SIZE];
+	int restante = numBytes;
+	fprintf(stdout, "[WF] Iniciando en %i durante %i bloques\n", aux_bloque, bloques_escribir);
+	for (int i = aux_bloque; i < aux_bloque + bloques_escribir; i++)
+	{
+		int bloque = inodos[fileDescriptor].inodosContenidos[i] + 5;
+		if(i >= inodos[fileDescriptor].cantidadBloquesOcupados) {
+			bloque = alloc();
+			if(bloque < -1) {
+				return -1;
+			}
+			inodos[fileDescriptor].inodosContenidos[i] = bloque;
+			inodos[fileDescriptor].cantidadBloquesOcupados++;
+		}
+		// Si es el primer bloque a escribir, escribir teniendo en cuenta la posición actual
+		if(i == aux_bloque){
+			fprintf(stdout, "[IF] Escribiendo bloque en posición %i\n", i);
+			if(bread(DEVICE_IMAGE, bloque, block) < 0) {
+				return -1; 
+			}
+			int offset = posicion % BLOCK_SIZE;
+			int length = BLOCK_SIZE - offset;
+			fprintf(stdout, "[IF] Escribiendo desde offset %i con longitud %i\n", offset, length);
+			memmove(offset + block, buffer, length);
+			if(bwrite(DEVICE_IMAGE, bloque, block) == -1) {
+				return -1;
+			}
+			restante = restante - length;
+		}
+		// Si es el último bloque a escribir, escribir teniendo el cuenta hasta donde se escribe 
+		else if (restante > BLOCK_SIZE) {
+			fprintf(stdout, "[ELSE IF] Escribiendo bloque en posición %i\n", i);
+			memmove(block, ((i - aux_bloque) * BLOCK_SIZE) + buffer, BLOCK_SIZE);
+			if(bwrite(DEVICE_IMAGE, bloque, block) == -1) {
+				return -1;
+			}
+			restante = restante - BLOCK_SIZE;
+		} 
+		// Si es un bloque cualquiera, escribir por completo
+		else {
+			fprintf(stdout, "[ELSE] Escribiendo bloque en posición %i\n", i);
+			memmove(block, ((i - aux_bloque) * BLOCK_SIZE) + buffer, restante);
+			bwrite(DEVICE_IMAGE, bloque, block);
+		}
+	}
+	// Actualizar inodos[fd].posición a posición inicial más bytes escritos
+	inodos[fileDescriptor].pos += numBytes;
+	inodos[fileDescriptor].tamanyo = inodos[fileDescriptor].pos;
+	return numBytes;
 }
 
 /*
@@ -464,32 +528,32 @@ void fullBlockMap() {
 
 
 void printSystem() {
-	printf("Superbloque:\nNumero magico:%i\nNumBloquesMapaBits:%i\nNumInodos:%i\nPrimerInodo:%i\nNumBloquesDatos:%i\nPrimerBloqueDatos:%i\nTamDispositivo:%i\n\n\n", sbloque.numMagico, sbloque.numBloquesMapaBits, sbloque.numInodos, sbloque.primerInodo, sbloque.numBloquesDatos, sbloque.primerBloqueDatos, sbloque.tamDispositivo);
+	fprintf(stdout, "Superbloque:\nNumero magico:%i\nNumBloquesMapaBits:%i\nNumInodos:%i\nPrimerInodo:%i\nNumBloquesDatos:%i\nPrimerBloqueDatos:%i\nTamDispositivo:%i\n\n\n", sbloque.numMagico, sbloque.numBloquesMapaBits, sbloque.numInodos, sbloque.primerInodo, sbloque.numBloquesDatos, sbloque.primerBloqueDatos, sbloque.tamDispositivo);
 
-	printf("Mapa de bits de inodos\n");
+	fprintf(stdout, "Mapa de bits de inodos\n");
 	for (int i = 0; i < 48; i++){
 		if (bitmap_getbit(mp.i_map,i) == 0) {
-			printf("%d",0);
+			fprintf(stdout, "%d",0);
 		}
 		else{
-			printf("%d",1);
+			fprintf(stdout, "%d",1);
 		}
 	}
 
-	printf("\n\nMapa de bits de bloques\n");
-	for (int i = 0; i < 38; i++){
+	fprintf(stdout, "\n\nMapa de bits de bloques\n");
+	for (int i = 0; i < 300; i++){
 		if (bitmap_getbit(mp.d_map,i) == 0) {
-			printf("%d",0);
+			fprintf(stdout, "%d",0);
 		}
 		else{
-			printf("%d",1);
+			fprintf(stdout, "%d",1);
 		}
 	}
 
-	printf("\n\n");
+	fprintf(stdout, "\n\n");
 
 	for (int i = 0; i < 48; i++){
-		printf("Inodo %i: tipo %i, pos %i, open %i, integridad %i, nombre %s, inodos Contenidos [%i,%i,%i,%i,%i], tamaño %i, bloques ocupados %i\n", i, inodos[i].tipo, inodos[i].pos, inodos[i].open, inodos[i].integridad, inodos[i].nombre, inodos[i].inodosContenidos[0], inodos[i].inodosContenidos[1], inodos[i].inodosContenidos[2], inodos[i].inodosContenidos[3], inodos[i].inodosContenidos[4], inodos[i].tamanyo, inodos[i].cantidadBloquesOcupados);
+		fprintf(stdout, "Inodo %i: tipo %i, pos %i, open %i, integridad %i, nombre %s, inodos Contenidos [%i,%i,%i,%i,%i], tamaño %i, bloques ocupados %i\n", i, inodos[i].tipo, inodos[i].pos, inodos[i].open, inodos[i].integridad, inodos[i].nombre, inodos[i].inodosContenidos[0], inodos[i].inodosContenidos[1], inodos[i].inodosContenidos[2], inodos[i].inodosContenidos[3], inodos[i].inodosContenidos[4], inodos[i].tamanyo, inodos[i].cantidadBloquesOcupados);
 	}
 	
 }
