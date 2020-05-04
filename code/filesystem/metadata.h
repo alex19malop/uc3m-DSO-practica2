@@ -48,10 +48,10 @@ typedef struct superbloque
  
 typedef struct mapas{
   char i_map[6];            //[48]; 48 bits         //[num_inodos = 48]
-  char d_map[5];               //[38];   40 bloques,solo se necesitan 38 los ultimos se van a poner siempre a 1      //[300 / 8 = 38]
-  char padding[2037];    /* para que llegue a 2048 */
+  char d_map[5];               //[38];   40 bloques,solo se necesitan 38 los ultimos se van a poner siempre a 1      //[300 (maximo teorico de tamanio) / 8 (bits en 1 byte) = 38]
+  char padding[2037];    /* para que llegue a 2048 */ 
 }mapas;
-
+ 
 
 /*Los inodos ocupan 3 bloques, porque 48 *128 / 2048 es 3,   48 es la 
 cantidad maxima de inodos, 128 lo que ocupa cada inodo y 2048 lo que 
@@ -71,7 +71,7 @@ typedef struct inodo{
   int integridad;
 
   /* Nombre del fichero asociado */                                                           
-  char nombre[32];  
+  char nombre[32+1];  //el +1 para el /0
 
   /* 10 KiB / 2048 son 5 bloques, en cada posicion se pone el bloque que está usando el archivo */                                                             
   int inodosContenidos[5];
@@ -82,6 +82,6 @@ typedef struct inodo{
   /*Bloques que ocupan los datos del archivo del inodo*/                                                   
   int cantidadBloquesOcupados;   
 
-  /* El tamaño del padding es 52 */
-  char relleno[52];                                        
+  /* El tamaño del padding es 51 */
+  char relleno[51];                                        
 } inodo;

@@ -24,7 +24,8 @@
 superbloque sbloque;
 mapas mp;
 inodo inodos[48];
-
+int mkFS_done;
+int mountFS_done;
 
 
 
@@ -77,7 +78,7 @@ int mkFS(long deviceSize)
 		if(i < 38){
 			bitmap_setbit(mp.d_map,i,0);
 		}
-		if(i==39 || i==38 ||i==0 || i==1 || i==2){
+		if(i==39 || i==38 ||i==0 || i==1 || i==2|| i==3|| i==4){
 			bitmap_setbit(mp.d_map,i,1);
 		}
 
@@ -95,6 +96,7 @@ int mkFS(long deviceSize)
 	printf("tamanio de inodo %li\n",sizeof(inodo));
 	printf("tamanio de superbloque %li\n",sizeof(superbloque));
 	printf("tamanio de mapas %li\n",sizeof(mapas));
+	mkFS_done = 0;
  	return 0;
 }
 
@@ -104,6 +106,9 @@ int mkFS(long deviceSize)
  */
 int mountFS(void)
 {
+	if(mkFS_done != 0){
+		return -1;
+	}
 	//escribir el superbloque
 	bread(DEVICE_IMAGE,0,(char*)(&sbloque));
 	//escribir el bitmap
@@ -113,8 +118,8 @@ int mountFS(void)
 	bread(DEVICE_IMAGE,3,(char*)(&inodos+BLOCK_SIZE));
 	bread(DEVICE_IMAGE,4,(char*)(&inodos+BLOCK_SIZE*2));
 	printf("magic number %d\n",sbloque.numMagico);
+	mountFS_done = 0;
 	return 0; 
-	
 }
 
 /*
@@ -123,6 +128,9 @@ int mountFS(void)
  */ 
 int unmountFS(void)
 {
+	if(mkFS_done != 0 || mountFS_done!= 0 ){
+		return -1;
+	}
 	//escribir el superbloque
 	bwrite(DEVICE_IMAGE,0,(char*)(&sbloque));
 	//escribir el bitmap
@@ -316,7 +324,7 @@ int removeFile(char *fileName)
  */
 int openFile(char *fileName)
 {
-    if(fileExist(fileName)==0){
+    if(fileExist(fileName)==0){ 
         return -1;
     }
     int inodo_id;
