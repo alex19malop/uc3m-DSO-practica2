@@ -137,6 +137,7 @@ int unmountFS(void)
 	bwrite(DEVICE_IMAGE,2,(char*)(&inodos));
 	bwrite(DEVICE_IMAGE,3,(char*)(&inodos+BLOCK_SIZE));
 	bwrite(DEVICE_IMAGE,4,(char*)(&inodos+BLOCK_SIZE*2));
+	
  	return 0;
 }
 
@@ -381,7 +382,7 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
 	// Eliminar bloques que ya no van a ser usados, cuando escribes sobreescribes lo que esta despues de la posicion
 	int posicion = inodos[fileDescriptor].pos;
 	int aux_bloque = floor(posicion/BLOCK_SIZE);
-	for (int i = aux_bloque + 1; i < inodos[fileDescriptor].cantidadBloquesOcupados; i++)
+	for (int i = aux_bloque + 1; inodos[fileDescriptor].tamanyo > 0 && i < inodos[fileDescriptor].cantidadBloquesOcupados; i++)
 	{
 		bitmap_setbit(mp.d_map,inodos[fileDescriptor].inodosContenidos[i], 0);
 	}
@@ -415,7 +416,11 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
 			int length = BLOCK_SIZE - offset;
 			fprintf(stdout, "[IF] Escribiendo desde offset %i con longitud %i\n", offset, length);
 			memmove(offset + block, buff, length);
-			if(bwrite(DEVICE_IMAGE, bloque, block) == -1) {
+			fprintf(stdout,"El block que escribimos es : %s \n",block);
+			fprintf(stdout,"El bloque que escribimos es : %d \n",bloque);
+			char *aux = malloc(sizeof(char)*sizeof(block));
+			strcpy(aux,block);
+			if(bwrite(DEVICE_IMAGE, bloque, aux) == -1) {
 				return -1;
 			}
 			char b[BLOCK_SIZE + 1];
@@ -426,7 +431,7 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
 			restante = restante - length;
 		}
 		// Si es el último bloque a escribir, escribir teniendo el cuenta hasta donde se escribe 
-		else if (restante > BLOCK_SIZE) {
+		/*else if (restante > BLOCK_SIZE) {
 			fprintf(stdout, "[ELSE IF] Escribiendo bloque en posición %i\n", i);
 			memmove(block, ((i - aux_bloque) * BLOCK_SIZE) + buff, BLOCK_SIZE);
 			if(bwrite(DEVICE_IMAGE, bloque, block) == -1) {
@@ -439,7 +444,7 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
 			fprintf(stdout, "[ELSE] Escribiendo bloque en posición %i\n", i);
 			memmove(block, ((i - aux_bloque) * BLOCK_SIZE) + buff, restante);
 			bwrite(DEVICE_IMAGE, bloque, block);
-		}
+		}*/
 	}
 	// Actualizar inodos[fd].posición a posición inicial más bytes escritos
 	

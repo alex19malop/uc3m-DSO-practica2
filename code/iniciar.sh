@@ -8,6 +8,7 @@ echo "\e[1;34m****************************************\e[0m"
 clear
 rm disk.dat
 ./create_disk 300
+hexdump -C disk.dat
 make clean
 echo 
 echo

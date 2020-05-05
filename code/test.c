@@ -366,7 +366,7 @@ int main()
 	    }
 	    fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.9.1 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
 
-		printSystem();
+		//printSystem();
 
 
 
