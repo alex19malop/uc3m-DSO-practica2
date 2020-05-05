@@ -19,16 +19,12 @@
 #include <math.h>
 #include <stdlib.h>
 
-
 /*Variables globales*/
 superbloque sbloque;
 mapas mp;
 inodo inodos[48];
 int mkFS_done = -1;
 int mountFS_done = -1;
-
-
-
 
 /*
  * @brief 	Generates the proper file system structure in a storage device, as designed by the student.
@@ -45,30 +41,30 @@ int mkFS(long deviceSize)
 	sbloque.primerBloqueDatos = 4;
 	sbloque.tamDispositivo = deviceSize;
 	
-	for (int i = 0; i < 505; i++)
+	for (int i = 0; i < 2020; i++)
 	{
 		sbloque.padding[i] = 0; 
 	}
-  
+   
 
 	for (int i = 0; i < 48; i++)
 	{
-		inodos[i].tipo = 1;
+		inodos[i].tipo = 1; 
 		inodos[i].pos = 0;
-		inodos[i].open = 0;  
+		inodos[i].open = 0;   
 		inodos[i].integridad = 0;
 		for (int j = 0; j < 5; j++){
 			inodos[i].inodosContenidos[j] = -1;
 		}
 		inodos[i].tamanyo = 0;
 		inodos[i].cantidadBloquesOcupados = 0;
-		for (int j = 0; j < 52; j++)
+		for (int j = 0; j < 47; j++)
 		{  
 			inodos[i].relleno[j] = 0;
 		}
 	} 
 
-	for (int i = 0; i < 2037; i++)  
+	for (int i = 0; i < 2004; i++)  
 	{
 		if(i < 48){
 			bitmap_setbit(mp.i_map,i,0);
@@ -88,7 +84,7 @@ int mkFS(long deviceSize)
 	}
 	
 
-	//escribir el superbloque
+	//escribir el superbloque 
 	bwrite(DEVICE_IMAGE,0,(char*)(&sbloque));
 	//escribir el bitmap
 	bwrite(DEVICE_IMAGE,1,(char*)(&mp));
@@ -120,7 +116,6 @@ int mountFS(void)
 	bread(DEVICE_IMAGE,2,(char*)(&inodos));
 	bread(DEVICE_IMAGE,3,(char*)(&inodos+BLOCK_SIZE));
 	bread(DEVICE_IMAGE,4,(char*)(&inodos+BLOCK_SIZE*2));
-	fprintf(stdout, "magic number %d\n",sbloque.numMagico);
 	mountFS_done = 0;
 	return 0; 
 }
@@ -142,7 +137,6 @@ int unmountFS(void)
 	bwrite(DEVICE_IMAGE,2,(char*)(&inodos));
 	bwrite(DEVICE_IMAGE,3,(char*)(&inodos+BLOCK_SIZE));
 	bwrite(DEVICE_IMAGE,4,(char*)(&inodos+BLOCK_SIZE*2));
-	fprintf(stdout, "magic number %d\n",sbloque.numMagico);
  	return 0;
 }
 
@@ -172,7 +166,7 @@ int ialloc ( void )
 			}
 			inodos[i].tamanyo = 0;
 			inodos[i].cantidadBloquesOcupados = 0;
-			for (int j = 0; j < 52; j++)
+			for (int j = 0; j < 47; j++)
 			{
 				inodos[i].relleno[j] = 0;
 			}
@@ -191,6 +185,9 @@ int alloc ( void )
 		if (bitmap_getbit(mp.d_map,i) == 0) {
 			bitmap_setbit(mp.d_map,i,1);	// bloque ocupado ahora
             /* No se ponen valores por defecto del bloque */
+			char bloque[BLOCK_SIZE];
+			memset(bloque, 0, BLOCK_SIZE);
+			bwrite(DEVICE_IMAGE, i + 5, bloque);
  			return i ; // devolver id. de bloque
  		}
  	}
@@ -240,14 +237,12 @@ int createFile(char *fileName)
     }
 	int b_id, inodo_id ;
  	inodo_id = ialloc() ;
-	fprintf(stdout, "El inodo_i es: %d\n",inodo_id);
 
  	if (inodo_id < 0) {
 		return -2 ;
 	}
 	
  	b_id = alloc();
-	fprintf(stdout, "El b_id es: %d\n",b_id);
 
  	if (b_id < 0) { 
 		ifree(inodo_id); 
@@ -256,7 +251,7 @@ int createFile(char *fileName)
  	inodos[inodo_id].tipo = 1 ; // FICHERO
  	strcpy(inodos[inodo_id].nombre, fileName);
  	inodos[inodo_id].inodosContenidos[0] = b_id ;
-	inodos[inodo_id].cantidadBloquesOcupados = 1;
+	inodos[inodo_id].cantidadBloquesOcupados = 1; 
 	inodos[inodo_id].open = 0;
 	inodos[inodo_id].pos = 0;
 	inodos[inodo_id].tamanyo = 0;
@@ -364,7 +359,7 @@ int readFile(int fileDescriptor, void *buffer, int numBytes)
  * @return	Number of bytes properly written, -1 in case of error.
  */
 //Escribe a partir del punterp de posición interno
-int writeFile(int fileDescriptor, void *buffer, int numBytes)
+int writeFile(int fileDescriptor, void *buff, int numBytes)
 {
 	//Si el inodo donde se quiere escribir no tiene fichero
 	if (bitmap_getbit(mp.i_map,fileDescriptor) == 0) {
@@ -376,7 +371,7 @@ int writeFile(int fileDescriptor, void *buffer, int numBytes)
 	}
 
 	if (numBytes <= 0) {
-		return 0;
+		return -1;
 	}
 
 	fprintf(stdout, "[WF] numBytes: %i\n", numBytes);
@@ -400,6 +395,7 @@ int writeFile(int fileDescriptor, void *buffer, int numBytes)
 	fprintf(stdout, "[WF] Iniciando en %i durante %i bloques\n", aux_bloque, bloques_escribir);
 	for (int i = aux_bloque; i < aux_bloque + bloques_escribir; i++)
 	{
+		memset(block, 0, BLOCK_SIZE);
 		int bloque = inodos[fileDescriptor].inodosContenidos[i] + 5;
 		if(i >= inodos[fileDescriptor].cantidadBloquesOcupados) {
 			bloque = alloc();
@@ -418,16 +414,21 @@ int writeFile(int fileDescriptor, void *buffer, int numBytes)
 			int offset = posicion % BLOCK_SIZE;
 			int length = BLOCK_SIZE - offset;
 			fprintf(stdout, "[IF] Escribiendo desde offset %i con longitud %i\n", offset, length);
-			memmove(offset + block, buffer, length);
+			memmove(offset + block, buff, length);
 			if(bwrite(DEVICE_IMAGE, bloque, block) == -1) {
 				return -1;
 			}
+			char b[BLOCK_SIZE + 1];
+			memset(b, 0, BLOCK_SIZE + 1);
+			fprintf(stdout, "Contenido b: %s\n", b);
+			bread(DEVICE_IMAGE, bloque, b);
+			fprintf(stdout, "Contenido b: %s\n", b);
 			restante = restante - length;
 		}
 		// Si es el último bloque a escribir, escribir teniendo el cuenta hasta donde se escribe 
 		else if (restante > BLOCK_SIZE) {
 			fprintf(stdout, "[ELSE IF] Escribiendo bloque en posición %i\n", i);
-			memmove(block, ((i - aux_bloque) * BLOCK_SIZE) + buffer, BLOCK_SIZE);
+			memmove(block, ((i - aux_bloque) * BLOCK_SIZE) + buff, BLOCK_SIZE);
 			if(bwrite(DEVICE_IMAGE, bloque, block) == -1) {
 				return -1;
 			}
@@ -436,11 +437,12 @@ int writeFile(int fileDescriptor, void *buffer, int numBytes)
 		// Si es un bloque cualquiera, escribir por completo
 		else {
 			fprintf(stdout, "[ELSE] Escribiendo bloque en posición %i\n", i);
-			memmove(block, ((i - aux_bloque) * BLOCK_SIZE) + buffer, restante);
+			memmove(block, ((i - aux_bloque) * BLOCK_SIZE) + buff, restante);
 			bwrite(DEVICE_IMAGE, bloque, block);
 		}
 	}
 	// Actualizar inodos[fd].posición a posición inicial más bytes escritos
+	
 	inodos[fileDescriptor].pos += numBytes;
 	inodos[fileDescriptor].tamanyo = inodos[fileDescriptor].pos;
 	return numBytes;
@@ -448,7 +450,7 @@ int writeFile(int fileDescriptor, void *buffer, int numBytes)
 
 /*
  * @brief	Modifies the position of the seek pointer of a file.
- * @return	0 if succes, -1 otherwise.
+ * @return	0 if success, -1 otherwise.
  */
 int lseekFile(int fileDescriptor, long offset, int whence)
 {
@@ -555,5 +557,6 @@ void printSystem() {
 	for (int i = 0; i < 48; i++){
 		fprintf(stdout, "Inodo %i: tipo %i, pos %i, open %i, integridad %i, nombre %s, inodos Contenidos [%i,%i,%i,%i,%i], tamaño %i, bloques ocupados %i\n", i, inodos[i].tipo, inodos[i].pos, inodos[i].open, inodos[i].integridad, inodos[i].nombre, inodos[i].inodosContenidos[0], inodos[i].inodosContenidos[1], inodos[i].inodosContenidos[2], inodos[i].inodosContenidos[3], inodos[i].inodosContenidos[4], inodos[i].tamanyo, inodos[i].cantidadBloquesOcupados);
 	}
+
 	
 }

@@ -291,13 +291,11 @@ int main()
 	****************************************************************/
     /* Prueba basica para cerrar un descriptor de fichero */
 
-	/*int e,f;
+	/*int e;
 	createFile("/test1.txt");
-	createFile("/test2.txt");
+	openFile("/test1.txt");
 	e = closeFile(0);
-	f = closeFile(1);
-	printSystem();
-	if (e == -1 || f == -1)
+	if (e == -1)
 	{
 		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.7.1  ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
 		return -1;
@@ -351,15 +349,15 @@ int main()
 	*						  TEST F1.9.1 						    *
 	****************************************************************/
 
-		//ret = createFile("/test1.txt");
+		ret = createFile("/test1.txt");
 		createFile("/test1.txt");
 		createFile("/test2.txt");
 		createFile("/test3.txt");
 		createFile("/test4.txt");
 		int fd = openFile("/test1.txt");
-		char *buffer1 = "esto es una prueba"; 
+		char *buffer1 = "esto es una prueba";
 		ret = writeFile(fd, buffer1, strlen(buffer1)+1);
-		closeFile(fd);
+		//closeFile(fd);
 
 		if (ret == -1)
 	    {
