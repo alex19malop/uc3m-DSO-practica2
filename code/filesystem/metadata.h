@@ -74,7 +74,7 @@ typedef struct inodo{
   char nombre[32+1];  //el +1 para el /0
 
   /* 10 KiB / 2048 son 5 bloques, en cada posicion se pone el bloque que está usando el archivo */                                                             
-  int inodosContenidos[5];
+  int inodosContenidos[5]; //inodosContenidos[0] si es simbolico el inodo al que apunta
 
   /* maximo 10240 bytes */
   int tamanyo;

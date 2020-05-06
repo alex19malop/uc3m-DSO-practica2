@@ -218,6 +218,27 @@ int main()
 
 */
 
+	/****************************************************************
+	*						TEST F1.5.3						    *
+	****************************************************************/
+	/* Prueba basica de creacion de 1 archivo y eliminacion de un enlace existente,
+	a través de la funcion de eliminar archivos removeFile */
+	/*
+	int x;
+	createFile("/test1.txt");
+	createLn("/test1.txt","enlace1");
+	printSystem();
+	x = removeFile("enlace1");
+
+	if (x != -2)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.5.3 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.5.3 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+
+	*/
+
 
 	/****************************************************************
 	*                                                               *
@@ -366,50 +387,48 @@ int main()
 	}
 	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.9.1 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
 
-*/
-		//printSystem();
+
+	printSystem();*/
 
 
-		/****************************************************************
-		*						  TEST F1.9.2 						    *
-		****************************************************************/
-	  	/* Prueba en la que se intenta escribir en un archivo que no ha sido abierto,
-		por lo que debería devolver -1 */
+	/****************************************************************
+	*						  TEST F1.9.2 						    *
+	****************************************************************/
+	/* Prueba en la que se intenta escribir en un archivo que no ha sido abierto,
+	por lo que debería devolver -1 */
 
-		/*ret = createFile("/test1.txt");
-		char *buffer1 = "esto es una prueba";
-		ret = writeFile(1, buffer1, strlen(buffer1)+1);
-
-		if (ret == -1)
-		{
+	/*ret = createFile("/test1.txt");
+	char *buffer1 = "esto es una prueba";
+	ret = writeFile(1, buffer1, strlen(buffer1)+1);
+	if (ret == -1)
+	{
 		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.9.2 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
-
 	}
 	else{
 		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.9.2 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
 		return -1;
-	}*/
+	}
+	printSystem();*/
 
 
 	/****************************************************************
 	*						  TEST F1.9.3 						    *
 	****************************************************************/
-	  	/* Prueba en la que se intenta escribir en un archivo cuyo inodo no existe,
-		por lo que deberá devolver 0 */
+	/* Prueba en la que se intenta escribir en un archivo cuyo inodo no existe,
+	por lo que deberá devolver 0 */
+	
+	/*char *buffer1 = "esto es una prueba";
+	ret = writeFile(13, buffer1, strlen(buffer1)+1);
 
-		/*char *buffer1 = "esto es una prueba";
-		ret = writeFile(13, buffer1, strlen(buffer1)+1);
-
-		if (ret == -1)
-		{
+	if (ret == -1)
+	{
 		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.9.3 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
-
 	}
 	else{
 		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.9.3 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
 		return -1;
-	}*/
-
+	}
+	printSystem();*/
 
 	/****************************************************************
 	*						  TEST F1.9.4 						    *
@@ -420,7 +439,9 @@ int main()
 
 	/*ret = createFile("/test1.txt");
 	int fd = openFile("/test1.txt");
-	char *buffer1 = "¿Qué pasó contigo? DímeloRrr!O-O-Ovy on the Drums! (Mmm)Ya no tiene excusa (No, no)Hoy salió con su amiga disque pa' matar la tusa (Ah, tusa)Que porque un hombre le pagó mal (AhEstá dura y abusa (Eh)Se cansó de ser buenaAhora es ella quien los usa (Hmm-mm)Que porque un hombre le pagó mal (Mal)Ya no se le ve sentimental (-tal)Dice que por otro man no llora, no (Llora)Pero si le ponen la canción (Hmm)Le da una depresión tontaLlorando lo comienza a llamarPero él ladejó e	buzón (No)¿Será porque con otra está (Con otra está)Fingiendo que a otra se puede amar?Pero diste todo este llanto por nadaAhora soy una chica malaAnd now you kickin' and screamin', a big toddlerDon't try to get your friends to come holla, hollaAyo, I used to lay lowI wasn't in the clubs, I was on my J.O (Woop-woop)Until I realized you a epic failSo don't tell your guys that I'm still your bae, yo (Ah!)'Cause it's a new day, I'm in a new place (Aha)Gettin' some new D,sittin' on a ne	face (Okay)'Cause I know I'm the baddest bitch that you ever really met (Woop)You searchin' for a badder bitch, and you ain't met her yet (Woop)Ayo! Tell 'em to back offHe wanna slack offAin't no more booty calls, you gotta jack offIt's me and Karol G, we let them rats talkDon't run up on us, 'cause they lettin' the MACs off (Rrr!) Pero si le ponen la canción (Hmm) Le da una depresión tonta Llorando lo comienza a llamarPero él la dejó en buzón (No) ¿Será porque conotra está (Con otr	está)Fingiendo que a otra se puede amar?Eh, ahUn-un shot pa' la pena profunda (Un shot, eh)Y seguimo' gastando la funda (La funda)Otro shot pa' la mente (Yeah-yeh) Pa' que el recuerdo no la atormente (Ah, oh)Ya no le copia nada (Na')Su ex ya no vale nada (Nada)Se va pa' la disco y sólo quiere perrear (Perrear)Pero se confunde cuando empieza a tomar (Tomar)Ella se cura con rumba (Ah)Y el amor pa' la tumba (Yeh)To' los hombre' le zumban (Le zumban)Pero si le ponenla canción (Oh)Le da un	depresión tonta (Tonta)Llorando lo comienza a llamarPero él la dejó en buzón (Oh)¿Será porque con otra está (Con otra está)Fingiendo que a otra se puede amar?Ey, Karol G (Ajá, Karol G)Nicki Minaj (Ah, ajá), eyThe Queen with The Queen (Ajá, jajaja)O-O-Ovy on the Drums ";
+	//char *buffer1 = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111122222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222223333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333";
+	//char *buffer1 = "Que paso contigo? DimeloRrr!O-O-Ovy on the Drums! (Mmm)Ya no tiene excusa (No, no)Hoy salio con su amiga disque pa' matar la tusa (Ah, tusa)Que porque un hombre le pago mal (AhEsta dura y abusa (Eh)Se canso de ser buenaAhora es ella quien los usa (Hmm-mm)Que porque un hombre le pago mal (Mal)Ya no se le ve sentimental (-tal)Dice que por otro man no llora, no (Llora)Pero si le ponen la cancion (Hmm)Le da una depresion tontaLlorando lo comienza a llamarPero el ladejo e	buzon (No)*Sera porque con otra esta (Con otra esta)Fingiendo que a otra se puede amar?Pero diste todo este llanto por nadaAhora soy una chica malaAnd now you kickin' and screamin', a big toddlerDon't try to get your friends to come holla, hollaAyo, I used to lay lowI wasn't in the clubs, I was on my J.O (Woop-woop)Until I realized you a epic failSo don't tell your guys that I'm still your bae, yo (Ah!)'Cause it's a new day, I'm in a new place (Aha)Gettin' some new D,sittin' on a ne	face (Okay)'Cause I know I'm the baddest bitch that you ever really met (Woop)You searchin' for a badder bitch, and you ain't met her yet (Woop)Ayo! Tell 'em to back offHe wanna slack offAin't no more booty calls, you gotta jack offIt's me and Karol G, we let them rats talkDon't run up on us, 'cause they lettin' the MACs off (Rrr!) Pero si le ponen la cancion (Hmm) Le da una depresion tonta Llorando lo comienza a llamarPero el la dejo en buzon (No) *Sera porque conotra esta (Con otr	esta)Fingiendo que a otra se puede amar?Eh, ahUn-un shot pa' la pena profunda (Un shot, eh)Y seguimo' gastando la funda (La funda)Otro shot pa' la mente (Yeah-yeh) Pa' que el recuerdo no la atormente (Ah, oh)Ya no le copia nada (Na')Su ex ya no vale nada (Nada)Se va pa' la disco y solo quiere perrear (Perrear)Pero se confunde cuando empieza a tomar (Tomar)Ella se cura con rumba (Ah)Y el amor pa' la tumba (Yeh)To' los hombre' le zumban (Le zumban)Pero si le ponenla cancion (Oh)Le da un	depresion tonta (Tonta)Llorando lo comienza a llamarPero el la dejo en buzon (Oh)*Sera porque con otra esta (Con otra esta)Fingiendo que a otra se puede amar?Ey, Karol G (Aja, Karol G)Nicki Minaj (Ah, aja), eyThe Queen with The Queen (Aja, jajaja)O-O-Ovy on the Drums";
+	char *buffer1 = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111112222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333344444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444445555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555";
 	ret = writeFile(fd, buffer1, strlen(buffer1)+1);
 	//closeFile(fd);
 
@@ -430,7 +451,7 @@ int main()
    		return -1;
 	}
 	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.9.4 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
-*/
+	printSystem();*/
 
 
 	/****************************************************************
@@ -446,10 +467,19 @@ int main()
 	char *buffer3 = "Tercera Prueba";
 	char *buffer4 = "Cuarta Prueba";
 
+
 	ret = writeFile(fd, buffer1, strlen(buffer1)+1);
+	closeFile(fd);
+	fd = openFile("/test1.txt");
 	ret = writeFile(fd, buffer2, strlen(buffer2)+1);
+	closeFile(fd);
+	fd = openFile("/test1.txt");
 	ret = writeFile(fd, buffer3, strlen(buffer3)+1);
+	closeFile(fd);
+	fd = openFile("/test1.txt");
 	ret = writeFile(fd, buffer4, strlen(buffer4)+1);
+
+	printSystem();
 
 	//closeFile(fd);
 
@@ -461,6 +491,149 @@ int main()
 	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.9.5 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
 
 
+	/****************************************************************
+	*                                                               *
+	*                           TEST F1.15                          *
+	*                                                               *
+	*****************************************************************
+	*						  TEST F1.15.1						    *
+	****************************************************************/
+	/* Prueba en la que se crea un enlace simbolico de un archivo existente*/
+
+	/*int x;
+	createFile("/test1.txt");
+	x = createLn("/test1.txt","enlace1");
+	printSystem();
+	if (x != 0)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.15.1 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.15.1 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+	*/
+
+	/****************************************************************
+	*						  TEST F1.15.2						    *
+	****************************************************************/
+	/* Prueba en la que se crea un enlace simbolico de un archivo inexistente*/
+	/*
+	int x;
+	createFile("/test1.txt");
+	x = createLn("/test8.txt","enlace1");
+	printSystem();
+	if (x != -1)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.15.2 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.15.2 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+	*/
+	/****************************************************************
+	*						TEST F1.15.3 						    *
+	****************************************************************/
+	/* Prueba en la cual no hay inodos disponibles.
+	Para ello llenaremos el mapa de inodos, por lo que createLn deberá devolver -2 */
+
+	/*fullInodeMap(); //Pone a 1 a todas las posiciones del mapa de inodos
+	int a;
+	createFile("/test1.txt");
+	a = createLn("/test1.txt","enlace1");
+
+
+	if (a == -2)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.15.3 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+	}
+	else {
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.15.3 ", ANSI_COLOR_RED, "FAIL\n", ANSI_COLOR_RESET);
+		return -1;
+	}*/
+
+	/****************************************************************
+	*						TEST F1.15.4						    *
+	****************************************************************/
+	/* Prueba en la cual no hay bloques disponibles.
+	Para ello llenaremos el mapa de bloques, por lo que createLn deberá devolver -2 */
+
+	/*fullBlockMap();
+	int a;
+	createFile("/test1.txt");
+	a = createLn("/test1.txt","enlace1");
+
+
+	if (a == -2)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.15.4 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+	}
+	else {
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.15.4 ", ANSI_COLOR_RED, "FAIL\n", ANSI_COLOR_RESET);
+		return -1;
+	}*/
+
+	/****************************************************************
+	*                                                               *
+	*                           TEST F1.16                          *
+	*                                                               *
+	*****************************************************************
+	*						  TEST F1.16.1						    *
+	****************************************************************/
+	/* Prueba en la que se elimina un enlace simbolico de un archivo existente*/
+	/*
+	int x;
+	createFile("/test1.txt");
+	createLn("/test1.txt","enlace1");
+	printSystem();
+	x = removeLn("enlace1");
+	printSystem();
+	if (x != 0)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.16.1 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.16.1 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+	*/
+
+	/****************************************************************
+	*						TEST F1.16.2						    *
+	****************************************************************/
+	/* Prueba basica de creacion de 1 archivo y eliminacion de un enlace inexistente,
+	debe de devolver -1 si el fichero no se ha encontrado */
+	/*
+	int x;
+	createFile("/test1.txt");
+	createLn("/test1.txt","enlace1");
+	printSystem();
+	x = removeLn("enlace20");
+
+	if (x != -1)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.16.2 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.16.2 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+
+	*/
+
+	/****************************************************************
+	*						TEST F1.16.3						    *
+	****************************************************************/
+	/* Prueba basica de creacion de 1 archivo y eliminacion de un archivo existente,
+	a través de la funcion de eliminar simbolos removeLn */
+	/*
+	int x;
+	createFile("/test1.txt");
+	createLn("/test1.txt","enlace1");
+	printSystem();
+	x = removeLn("/test1.txt");
+
+	if (x != -2)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.16.3 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.16.3 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+
+	*/
 
 
 	/****************************************************************

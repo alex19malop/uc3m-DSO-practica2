@@ -283,6 +283,10 @@ int removeFile(char *fileName)
 		return -1;
 	}
 
+	if (inodos[i].tipo == 0){
+		return -2;
+	}
+
 	//Bitmap de inodos, el encontrado a 0.
 	bitmap_setbit(mp.i_map,i,0);
 	//Inodo encontrado vuelva a la normalidad
@@ -398,9 +402,10 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
 		// Si no tiene bloque asociado, asignar uno nuevo
 	char block[BLOCK_SIZE];
 	int restante = numBytes;
-	fprintf(stdout, "[WF] Iniciando en %i durante %i bloques\n", aux_bloque, bloques_escribir);
+	//fprintf(stdout, "[WF] Iniciando en %i durante %i bloques\n", aux_bloque, bloques_escribir);
 	for (int i = aux_bloque; i < aux_bloque + bloques_escribir; i++)
 	{
+		printf("%i\n", i);
 		memset(block, 0, BLOCK_SIZE);
 		int bloque = inodos[fileDescriptor].inodosContenidos[i] + 5;
 		if(i >= inodos[fileDescriptor].cantidadBloquesOcupados) {
@@ -413,16 +418,20 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
 		}
 		// Si es el primer bloque a escribir, escribir teniendo en cuenta la posición actual
 		if(i == aux_bloque){
-			fprintf(stdout, "[IF] Escribiendo bloque en posición %i\n", i);
+			//fprintf(stdout, "[IF] Escribiendo bloque en posición %i\n", i);
 			if(bread(DEVICE_IMAGE, bloque, block) < 0) {
 				return -1;
 			}
 			int offset = posicion % BLOCK_SIZE;
 			int length = BLOCK_SIZE - offset;
 			fprintf(stdout, "[IF] Escribiendo desde offset %i con longitud %i\n", offset, length);
+			fprintf(stdout,"El buff que escribimos es : %s \n",(char*)buff);
+
 			memmove(offset + block, buff, length);
+			//strcat(block,(char*)buff);   		//ALBARO
 			fprintf(stdout,"El block que escribimos es : %s \n",block);
 			fprintf(stdout,"El bloque que escribimos es : %d \n",bloque);
+			fprintf(stdout,"la posicion que escribimos es : %d \n",posicion);
 			char *aux = malloc(sizeof(char)*sizeof(block));
 			strcpy(aux,block);
 			if(bwrite(DEVICE_IMAGE, bloque, aux) == -1) {
@@ -430,16 +439,21 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
 			}
 			char b[BLOCK_SIZE + 1];
 			memset(b, 0, BLOCK_SIZE + 1);
-			fprintf(stdout, "Contenido b: %s\n", b);
+			//fprintf(stdout, "Contenido b: %s\n", b);
 			bread(DEVICE_IMAGE, bloque, b);
-			fprintf(stdout, "Contenido b: %s\n", b);
+			//fprintf(stdout, "Contenido b: %s\n", b);
 			restante = restante - length;
 		}
 		// Si es el último bloque a escribir, escribir teniendo el cuenta hasta donde se escribe
 		/*else if (restante > BLOCK_SIZE) {
 			fprintf(stdout, "[ELSE IF] Escribiendo bloque en posición %i\n", i);
 			memmove(block, ((i - aux_bloque) * BLOCK_SIZE) + buff, BLOCK_SIZE);
-			if(bwrite(DEVICE_IMAGE, bloque, block) == -1) {
+			char *aux2 = malloc(sizeof(char)*sizeof(block));
+			strcpy(aux2,block);
+			fprintf(stdout, "El bloque a imprimir es: %d\n",bloque);
+			fprintf(stdout, "El block a imprimir es: %s\n",aux2);
+
+			if(bwrite(DEVICE_IMAGE, bloque, aux2) == -1) {
 				return -1;
 			}
 			restante = restante - BLOCK_SIZE;
@@ -448,7 +462,9 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
 		else {
 			fprintf(stdout, "[ELSE] Escribiendo bloque en posición %i\n", i);
 			memmove(block, ((i - aux_bloque) * BLOCK_SIZE) + buff, restante);
-			bwrite(DEVICE_IMAGE, bloque, block);
+			char *aux = malloc(sizeof(char)*sizeof(block));
+			strcpy(aux,block);
+			bwrite(DEVICE_IMAGE, bloque, aux);
 		}*/
 	}
 	// Actualizar inodos[fd].posición a posición inicial más bytes escritos
@@ -512,7 +528,37 @@ int closeFileIntegrity(int fileDescriptor)
  */
 int createLn(char *fileName, char *linkName)
 {
-    return -1;
+    if(fileExist(fileName)==0){		
+		return -1;
+	}
+
+	if (isInodeFull() == -2 || isBlocksFull() == -2) {		
+        return -2;
+    }
+
+	int b_id, inodo_id;
+ 	inodo_id = ialloc();
+
+ 	if (inodo_id < 0) {
+		return -2 ;
+	}
+
+ 	b_id = alloc();
+
+ 	if (b_id < 0) {
+		ifree(inodo_id);
+		return -2 ;
+	}
+	int indice = busca_inodo(fileName);
+ 	inodos[inodo_id].tipo = 0; // ENLACE
+ 	strcpy(inodos[inodo_id].nombre, linkName);
+ 	inodos[inodo_id].inodosContenidos[0] = indice;
+	inodos[inodo_id].cantidadBloquesOcupados = 0;
+	inodos[inodo_id].open = inodos[indice].open;
+	inodos[inodo_id].pos = 0;
+	inodos[inodo_id].tamanyo = 0;
+
+ 	return 0;
 }
 
 /*
@@ -521,7 +567,27 @@ int createLn(char *fileName, char *linkName)
  */
 int removeLn(char *linkName)
 {
-    return -2;
+	int i = busca_inodo(linkName);
+	if(i == -1){
+		return -1;
+	}
+
+	if (inodos[i].tipo == 1){
+		return -2;
+	}
+
+	//Bitmap de inodos, el encontrado a 0.
+	bitmap_setbit(mp.i_map,i,0);
+	//Inodo encontrado vuelva a la normalidad
+	inodos[i].tipo = 1;
+	for (int j = 0; j < 5; j++){
+		bitmap_setbit(mp.d_map,inodos[i].inodosContenidos[j],0);
+		inodos[i].inodosContenidos[j] = -1;
+	}
+	// Escribe en esa dir de memoria el valor de en medio en todo ese tamanio
+	memset(&(inodos[i].nombre), 0, 32+1);
+
+	return	0;
 }
 
 void fullInodeMap() {
@@ -532,8 +598,7 @@ void fullInodeMap() {
 }
 
 void fullBlockMap() {
-    for (int i = 0; i < 38; i++)
-    {
+    for (int i = 0; i < 38; i++){
         bitmap_setbit(mp.d_map,i,1);
     }
 }
