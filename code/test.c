@@ -42,7 +42,7 @@ int main()
 		return -1;
 	}
 	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.1 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
-	
+
 
 
 	/****************************************************************
@@ -348,25 +348,117 @@ int main()
 	*****************************************************************
 	*						  TEST F1.9.1 						    *
 	****************************************************************/
+	/* Prueba en la que se escribe en un fichero abierto una cadena de caracteres*/
 
-		ret = createFile("/test1.txt");
-		createFile("/test1.txt");
-		createFile("/test2.txt");
-		createFile("/test3.txt");
-		createFile("/test4.txt");
-		int fd = openFile("/test1.txt");
+	/*ret = createFile("/test1.txt");
+	createFile("/test2.txt");
+	createFile("/test3.txt");
+	createFile("/test4.txt");
+	int fd = openFile("/test1.txt");
+	char *buffer1 = "esto es una prueba";
+	ret = writeFile(fd, buffer1, strlen(buffer1)+1);
+	//closeFile(fd);
+
+	if (ret == -1)
+	{
+	   	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.9.1 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+	   	return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.9.1 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+
+*/
+		//printSystem();
+
+
+		/****************************************************************
+		*						  TEST F1.9.2 						    *
+		****************************************************************/
+	  	/* Prueba en la que se intenta escribir en un archivo que no ha sido abierto,
+		por lo que debería devolver -1 */
+
+		/*ret = createFile("/test1.txt");
 		char *buffer1 = "esto es una prueba";
-		ret = writeFile(fd, buffer1, strlen(buffer1)+1);
-		//closeFile(fd);
+		ret = writeFile(1, buffer1, strlen(buffer1)+1);
 
 		if (ret == -1)
-	    {
-	    	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.9.1 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
-	    	return -1;
-	    }
-	    fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.9.1 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+		{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.9.2 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
 
-		//printSystem();
+	}
+	else{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.9.2 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}*/
+
+
+	/****************************************************************
+	*						  TEST F1.9.3 						    *
+	****************************************************************/
+	  	/* Prueba en la que se intenta escribir en un archivo cuyo inodo no existe,
+		por lo que deberá devolver 0 */
+
+		/*char *buffer1 = "esto es una prueba";
+		ret = writeFile(13, buffer1, strlen(buffer1)+1);
+
+		if (ret == -1)
+		{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.9.3 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+
+	}
+	else{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.9.3 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}*/
+
+
+	/****************************************************************
+	*						  TEST F1.9.4 						    *
+	****************************************************************/
+
+	/* Prueba en la que se escribe en un fichero abierto una cadena de caracteres
+	con el objetivo de que ocupe varios bloques */
+
+	/*ret = createFile("/test1.txt");
+	int fd = openFile("/test1.txt");
+	char *buffer1 = "¿Qué pasó contigo? DímeloRrr!O-O-Ovy on the Drums! (Mmm)Ya no tiene excusa (No, no)Hoy salió con su amiga disque pa' matar la tusa (Ah, tusa)Que porque un hombre le pagó mal (AhEstá dura y abusa (Eh)Se cansó de ser buenaAhora es ella quien los usa (Hmm-mm)Que porque un hombre le pagó mal (Mal)Ya no se le ve sentimental (-tal)Dice que por otro man no llora, no (Llora)Pero si le ponen la canción (Hmm)Le da una depresión tontaLlorando lo comienza a llamarPero él ladejó e	buzón (No)¿Será porque con otra está (Con otra está)Fingiendo que a otra se puede amar?Pero diste todo este llanto por nadaAhora soy una chica malaAnd now you kickin' and screamin', a big toddlerDon't try to get your friends to come holla, hollaAyo, I used to lay lowI wasn't in the clubs, I was on my J.O (Woop-woop)Until I realized you a epic failSo don't tell your guys that I'm still your bae, yo (Ah!)'Cause it's a new day, I'm in a new place (Aha)Gettin' some new D,sittin' on a ne	face (Okay)'Cause I know I'm the baddest bitch that you ever really met (Woop)You searchin' for a badder bitch, and you ain't met her yet (Woop)Ayo! Tell 'em to back offHe wanna slack offAin't no more booty calls, you gotta jack offIt's me and Karol G, we let them rats talkDon't run up on us, 'cause they lettin' the MACs off (Rrr!) Pero si le ponen la canción (Hmm) Le da una depresión tonta Llorando lo comienza a llamarPero él la dejó en buzón (No) ¿Será porque conotra está (Con otr	está)Fingiendo que a otra se puede amar?Eh, ahUn-un shot pa' la pena profunda (Un shot, eh)Y seguimo' gastando la funda (La funda)Otro shot pa' la mente (Yeah-yeh) Pa' que el recuerdo no la atormente (Ah, oh)Ya no le copia nada (Na')Su ex ya no vale nada (Nada)Se va pa' la disco y sólo quiere perrear (Perrear)Pero se confunde cuando empieza a tomar (Tomar)Ella se cura con rumba (Ah)Y el amor pa' la tumba (Yeh)To' los hombre' le zumban (Le zumban)Pero si le ponenla canción (Oh)Le da un	depresión tonta (Tonta)Llorando lo comienza a llamarPero él la dejó en buzón (Oh)¿Será porque con otra está (Con otra está)Fingiendo que a otra se puede amar?Ey, Karol G (Ajá, Karol G)Nicki Minaj (Ah, ajá), eyThe Queen with The Queen (Ajá, jajaja)O-O-Ovy on the Drums ";
+	ret = writeFile(fd, buffer1, strlen(buffer1)+1);
+	//closeFile(fd);
+
+	if (ret == -1)
+	{
+   		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.9.4 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+   		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.9.4 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+*/
+
+
+	/****************************************************************
+	*						  TEST F1.9.5 						    *
+	****************************************************************/
+
+	/* Prueba en la que se escribe en un fichero abierto varios writes diferentes */
+
+	ret = createFile("/test1.txt");
+	int fd = openFile("/test1.txt");
+	char *buffer1 = "Primera Prueba";
+	char *buffer2 = "Segunda Prueba";
+	char *buffer3 = "Tercera Prueba";
+	char *buffer4 = "Cuarta Prueba";
+
+	ret = writeFile(fd, buffer1, strlen(buffer1)+1);
+	ret = writeFile(fd, buffer2, strlen(buffer2)+1);
+	ret = writeFile(fd, buffer3, strlen(buffer3)+1);
+	ret = writeFile(fd, buffer4, strlen(buffer4)+1);
+
+	//closeFile(fd);
+
+	if (ret == -1)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.9.5 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.9.5 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
 
 
 

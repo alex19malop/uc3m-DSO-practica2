@@ -10,7 +10,7 @@
  *
  */
 
- 
+
 #include "filesystem/filesystem.h" // Headers for the core functionality
 #include "filesystem/auxiliary.h"  // Headers for auxiliary functions
 #include "filesystem/metadata.h"   // Type and structure declaration of the file system
@@ -36,22 +36,22 @@ int mkFS(long deviceSize)
 	sbloque.numMagico = 12345;
 	sbloque.numBloquesMapaBits = 1;
 	sbloque.numInodos = 48;
-	sbloque.primerInodo = 2; 
-	sbloque.numBloquesDatos = deviceSize/(BLOCK_SIZE-2-3);				//= device_size / Block_size - 2 - (Lo que ocupe los bloques de inodos = 3) 
+	sbloque.primerInodo = 2;
+	sbloque.numBloquesDatos = deviceSize/(BLOCK_SIZE-2-3);				//= device_size / Block_size - 2 - (Lo que ocupe los bloques de inodos = 3)
 	sbloque.primerBloqueDatos = 4;
 	sbloque.tamDispositivo = deviceSize;
-	
+
 	for (int i = 0; i < 2020; i++)
 	{
-		sbloque.padding[i] = 0; 
+		sbloque.padding[i] = 0;
 	}
-   
+
 
 	for (int i = 0; i < 48; i++)
 	{
-		inodos[i].tipo = 1; 
+		inodos[i].tipo = 1;
 		inodos[i].pos = 0;
-		inodos[i].open = 0;   
+		inodos[i].open = 0;
 		inodos[i].integridad = 0;
 		for (int j = 0; j < 5; j++){
 			inodos[i].inodosContenidos[j] = -1;
@@ -59,12 +59,12 @@ int mkFS(long deviceSize)
 		inodos[i].tamanyo = 0;
 		inodos[i].cantidadBloquesOcupados = 0;
 		for (int j = 0; j < 47; j++)
-		{  
+		{
 			inodos[i].relleno[j] = 0;
 		}
-	} 
+	}
 
-	for (int i = 0; i < 2004; i++)  
+	for (int i = 0; i < 2004; i++)
 	{
 		if(i < 48){
 			bitmap_setbit(mp.i_map,i,0);
@@ -77,14 +77,14 @@ int mkFS(long deviceSize)
 		mp.padding[i] = 0;
 	}
 
-	for (int i = 0; i < 48; i++) 
+	for (int i = 0; i < 48; i++)
 	{
 		// Escribe en esa dir de memoria el valor de en medio en todo ese tamanio
 		memset(&(inodos[i].nombre), 0, 32+1);
 	}
-	
 
-	//escribir el superbloque 
+
+	//escribir el superbloque
 	bwrite(DEVICE_IMAGE,0,(char*)(&sbloque));
 	//escribir el bitmap
 	bwrite(DEVICE_IMAGE,1,(char*)(&mp));
@@ -117,13 +117,13 @@ int mountFS(void)
 	bread(DEVICE_IMAGE,3,(char*)(&inodos+BLOCK_SIZE));
 	bread(DEVICE_IMAGE,4,(char*)(&inodos+BLOCK_SIZE*2));
 	mountFS_done = 0;
-	return 0; 
+	return 0;
 }
 
 /*
  * @brief 	Unmounts the file system from the simulated device.
  * @return 	0 if success, -1 otherwise.
- */ 
+ */
 int unmountFS(void)
 {
 	if(mkFS_done != 0 || mountFS_done!= 0 ){
@@ -137,16 +137,16 @@ int unmountFS(void)
 	bwrite(DEVICE_IMAGE,2,(char*)(&inodos));
 	bwrite(DEVICE_IMAGE,3,(char*)(&inodos+BLOCK_SIZE));
 	bwrite(DEVICE_IMAGE,4,(char*)(&inodos+BLOCK_SIZE*2));
-	
+
  	return 0;
 }
 
 int ifree ( int inodo_id ) {    // comprobar validez de inodo_id
 	if (inodo_id > sbloque.numInodos) {
-		return -1;    // liberar i-nodo   
-	} 
-	bitmap_setbit(mp.i_map,inodo_id,0);    
-	return -1; 
+		return -1;    // liberar i-nodo
+	}
+	bitmap_setbit(mp.i_map,inodo_id,0);
+	return -1;
 }
 
 int ialloc ( void )
@@ -175,10 +175,10 @@ int ialloc ( void )
  		}
  	}
  return -1;
-} 
+}
 
 
-  
+
 int alloc ( void )
 {
  	for (int i=0; i < (int)(ceil((double)sbloque.tamDispositivo/BLOCK_SIZE) - 5); i++)
@@ -199,11 +199,11 @@ int fileExist(char *fileName) {
 	for (int i = 0; i < 48; i++) {
 
 		if(strcmp(inodos[i].nombre, fileName)==0) {
-			return -1; 
+			return -1;
 		}
 	}
 	return 0;
-	
+
 }
 
 int isInodeFull() {
@@ -229,7 +229,7 @@ int isBlocksFull() {
  * @return	0 if success, -1 if the file already exists, -2 in case of error.
  */
 int createFile(char *fileName)
-{ 
+{
 	if(fileExist(fileName)==-1){
 		return -1;
 	}
@@ -242,22 +242,22 @@ int createFile(char *fileName)
  	if (inodo_id < 0) {
 		return -2 ;
 	}
-	
+
  	b_id = alloc();
 
- 	if (b_id < 0) { 
-		ifree(inodo_id); 
+ 	if (b_id < 0) {
+		ifree(inodo_id);
 		return -2 ;
 	}
  	inodos[inodo_id].tipo = 1 ; // FICHERO
  	strcpy(inodos[inodo_id].nombre, fileName);
  	inodos[inodo_id].inodosContenidos[0] = b_id ;
-	inodos[inodo_id].cantidadBloquesOcupados = 1; 
+	inodos[inodo_id].cantidadBloquesOcupados = 1;
 	inodos[inodo_id].open = 0;
 	inodos[inodo_id].pos = 0;
 	inodos[inodo_id].tamanyo = 0;
 
- 	return 0; 
+ 	return 0;
 }
 
 
@@ -265,11 +265,11 @@ int createFile(char *fileName)
 int busca_inodo(char *fileName) {
 	for (int i = 0; i < 48; i++) {
 		if(strcmp(inodos[i].nombre, fileName)==0) {
-			return i; 
+			return i;
 		}
 	}
 	return -1;
-	 
+
 }
 
 /*
@@ -283,11 +283,11 @@ int removeFile(char *fileName)
 		return -1;
 	}
 
-	//Bitmap de inodos, el encontrado a 0. 
+	//Bitmap de inodos, el encontrado a 0.
 	bitmap_setbit(mp.i_map,i,0);
 	//Inodo encontrado vuelva a la normalidad
 	inodos[i].tipo = 1;
-	for (int j = 0; j < 5; j++){  
+	for (int j = 0; j < 5; j++){
 		bitmap_setbit(mp.d_map,inodos[i].inodosContenidos[j],0);
 		inodos[i].inodosContenidos[j] = -1;
 	}
@@ -303,7 +303,7 @@ int removeFile(char *fileName)
  */
 int openFile(char *fileName)
 {
-    if(fileExist(fileName) == 0){ 
+    if(fileExist(fileName) == 0){
         return -1;
     }
     int inodo_id;
@@ -319,7 +319,7 @@ int openFile(char *fileName)
     // iniciar sesión de trabajo
     inodos[inodo_id].pos = 0;
     inodos[inodo_id].open = 1;
-    return inodo_id; 
+    return inodo_id;
 }
 
 
@@ -342,11 +342,11 @@ int closeFile(int fileDescriptor)
     // cerrar sesión de trabajo
     inodos[fileDescriptor].pos = 0;
     inodos[fileDescriptor].open = 0;
-    return 0; 
+    return 0;
 }
-  
 
-/* 
+
+/*
  * @brief	Reads a number of bytes from a file and stores them in a buffer.
  * @return	Number of bytes properly read, -1 in case of error.
  */
@@ -362,9 +362,14 @@ int readFile(int fileDescriptor, void *buffer, int numBytes)
 //Escribe a partir del punterp de posición interno
 int writeFile(int fileDescriptor, void *buff, int numBytes)
 {
+    /* Si está cerrado no se puede hacer un write */
+    if(inodos[fileDescriptor].open == 0) {
+        return -1;
+    }
+
 	//Si el inodo donde se quiere escribir no tiene fichero
 	if (bitmap_getbit(mp.i_map,fileDescriptor) == 0) {
-		return -1; 
+		return -1;
 	}
 	/* Ajustar numBytes al tamaño máximo del fichero */
 	if ((inodos[fileDescriptor].pos + numBytes) > MAX_FILE_SIZE) {
@@ -386,7 +391,7 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
 	{
 		bitmap_setbit(mp.d_map,inodos[fileDescriptor].inodosContenidos[i], 0);
 	}
-	
+
 
 	// Comenzando desde el bloque de la posición actual hasta el último bloque se va a escribir
 		// Obtener el bloque asociado a la posición actual del fichero
@@ -410,7 +415,7 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
 		if(i == aux_bloque){
 			fprintf(stdout, "[IF] Escribiendo bloque en posición %i\n", i);
 			if(bread(DEVICE_IMAGE, bloque, block) < 0) {
-				return -1; 
+				return -1;
 			}
 			int offset = posicion % BLOCK_SIZE;
 			int length = BLOCK_SIZE - offset;
@@ -430,7 +435,7 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
 			fprintf(stdout, "Contenido b: %s\n", b);
 			restante = restante - length;
 		}
-		// Si es el último bloque a escribir, escribir teniendo el cuenta hasta donde se escribe 
+		// Si es el último bloque a escribir, escribir teniendo el cuenta hasta donde se escribe
 		/*else if (restante > BLOCK_SIZE) {
 			fprintf(stdout, "[ELSE IF] Escribiendo bloque en posición %i\n", i);
 			memmove(block, ((i - aux_bloque) * BLOCK_SIZE) + buff, BLOCK_SIZE);
@@ -438,7 +443,7 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
 				return -1;
 			}
 			restante = restante - BLOCK_SIZE;
-		} 
+		}
 		// Si es un bloque cualquiera, escribir por completo
 		else {
 			fprintf(stdout, "[ELSE] Escribiendo bloque en posición %i\n", i);
@@ -447,7 +452,7 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
 		}*/
 	}
 	// Actualizar inodos[fd].posición a posición inicial más bytes escritos
-	
+
 	inodos[fileDescriptor].pos += numBytes;
 	inodos[fileDescriptor].tamanyo = inodos[fileDescriptor].pos;
 	return numBytes;
@@ -525,7 +530,7 @@ void fullInodeMap() {
         bitmap_setbit(mp.i_map,i,1);
     }
 }
- 
+
 void fullBlockMap() {
     for (int i = 0; i < 38; i++)
     {
@@ -563,5 +568,5 @@ void printSystem() {
 		fprintf(stdout, "Inodo %i: tipo %i, pos %i, open %i, integridad %i, nombre %s, inodos Contenidos [%i,%i,%i,%i,%i], tamaño %i, bloques ocupados %i\n", i, inodos[i].tipo, inodos[i].pos, inodos[i].open, inodos[i].integridad, inodos[i].nombre, inodos[i].inodosContenidos[0], inodos[i].inodosContenidos[1], inodos[i].inodosContenidos[2], inodos[i].inodosContenidos[3], inodos[i].inodosContenidos[4], inodos[i].tamanyo, inodos[i].cantidadBloquesOcupados);
 	}
 
-	
+
 }
