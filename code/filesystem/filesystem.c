@@ -38,7 +38,7 @@ int mkFS(long deviceSize)
 	sbloque.numInodos = 48;
 	sbloque.primerInodo = 2;
 	sbloque.numBloquesDatos = deviceSize/(BLOCK_SIZE-2-3);				//= device_size / Block_size - 2 - (Lo que ocupe los bloques de inodos = 3)
-	sbloque.primerBloqueDatos = 4;
+	sbloque.primerBloqueDatos = 5;
 	sbloque.tamDispositivo = deviceSize;
 
 	for (int i = 0; i < 2020; i++)
@@ -188,7 +188,7 @@ int alloc ( void )
             /* No se ponen valores por defecto del bloque */
 			char bloque[BLOCK_SIZE];
 			memset(bloque, 0, BLOCK_SIZE);
-			bwrite(DEVICE_IMAGE, i + 5, bloque);
+			bwrite(DEVICE_IMAGE, i + sbloque.primerBloqueDatos, bloque);
  			return i ; // devolver id. de bloque
  		}
  	}
@@ -386,7 +386,7 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
 
 	fprintf(stdout, "[WF] numBytes: %i\n", numBytes);
 	// Calcular numero de bloques que se van escribir
-	int bloques_escribir = (int) ceil(((double)numBytes/BLOCK_SIZE));
+	int bloques_escribir = (numBytes + BLOCK_SIZE - 1) / BLOCK_SIZE;
 
 	// Eliminar bloques que ya no van a ser usados, cuando escribes sobreescribes lo que esta despues de la posicion
 	int posicion = inodos[fileDescriptor].pos;
@@ -394,6 +394,9 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
 	for (int i = aux_bloque + 1; inodos[fileDescriptor].tamanyo > 0 && i < inodos[fileDescriptor].cantidadBloquesOcupados; i++)
 	{
 		bitmap_setbit(mp.d_map,inodos[fileDescriptor].inodosContenidos[i], 0);
+		char bloque[BLOCK_SIZE];
+		memset(bloque, 0, BLOCK_SIZE);
+		bwrite(DEVICE_IMAGE, i + sbloque.primerBloqueDatos, bloque);
 	}
 
 
@@ -405,68 +408,143 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
 	//fprintf(stdout, "[WF] Iniciando en %i durante %i bloques\n", aux_bloque, bloques_escribir);
 	for (int i = aux_bloque; i < aux_bloque + bloques_escribir; i++)
 	{
-		printf("%i\n", i);
 		memset(block, 0, BLOCK_SIZE);
-		int bloque = inodos[fileDescriptor].inodosContenidos[i] + 5;
-		if(i >= inodos[fileDescriptor].cantidadBloquesOcupados) {
-			bloque = alloc();
-			if(bloque < -1) {
+		int bloque_id = inodos[fileDescriptor].inodosContenidos[i] + sbloque.primerBloqueDatos;
+
+  		if (i >= inodos[fileDescriptor].cantidadBloquesOcupados) {
+			bloque_id = alloc() + sbloque.primerBloqueDatos;
+			if(bloque_id < -1) {
 				return -1;
 			}
-			inodos[fileDescriptor].inodosContenidos[i] = bloque;
+			inodos[fileDescriptor].inodosContenidos[i] = bloque_id;
 			inodos[fileDescriptor].cantidadBloquesOcupados++;
-		}
-		// Si es el primer bloque a escribir, escribir teniendo en cuenta la posición actual
-		if(i == aux_bloque){
-			//fprintf(stdout, "[IF] Escribiendo bloque en posición %i\n", i);
-			if(bread(DEVICE_IMAGE, bloque, block) < 0) {
-				return -1;
-			}
-			int offset = posicion % BLOCK_SIZE;
-			int length = BLOCK_SIZE - offset;
-			fprintf(stdout, "[IF] Escribiendo desde offset %i con longitud %i\n", offset, length);
-			fprintf(stdout,"El buff que escribimos es : %s \n",(char*)buff);
+  		}
 
-			memmove(offset + block, buff, length);
-			//strcat(block,(char*)buff);   		//ALBARO
-			fprintf(stdout,"El block que escribimos es : %s \n",block);
-			fprintf(stdout,"El bloque que escribimos es : %d \n",bloque);
-			fprintf(stdout,"la posicion que escribimos es : %d \n",posicion);
-			char *aux = malloc(sizeof(char)*sizeof(block));
-			strcpy(aux,block);
-			if(bwrite(DEVICE_IMAGE, bloque, aux) == -1) {
-				return -1;
-			}
-			char b[BLOCK_SIZE + 1];
-			memset(b, 0, BLOCK_SIZE + 1);
-			//fprintf(stdout, "Contenido b: %s\n", b);
-			bread(DEVICE_IMAGE, bloque, b);
-			//fprintf(stdout, "Contenido b: %s\n", b);
-			restante = restante - length;
-		}
-		// Si es el último bloque a escribir, escribir teniendo el cuenta hasta donde se escribe
-		/*else if (restante > BLOCK_SIZE) {
-			fprintf(stdout, "[ELSE IF] Escribiendo bloque en posición %i\n", i);
-			memmove(block, ((i - aux_bloque) * BLOCK_SIZE) + buff, BLOCK_SIZE);
-			char *aux2 = malloc(sizeof(char)*sizeof(block));
-			strcpy(aux2,block);
-			fprintf(stdout, "El bloque a imprimir es: %d\n",bloque);
-			fprintf(stdout, "El block a imprimir es: %s\n",aux2);
+		printf("Bloque %i en la posición %i\n", bloque_id, i);
 
-			if(bwrite(DEVICE_IMAGE, bloque, aux2) == -1) {
-				return -1;
+		if (i == aux_bloque) {
+			printf("Primero\n");
+			int l = BLOCK_SIZE - (posicion % BLOCK_SIZE); // Longitud a escribir con memmove
+			if(posicion % BLOCK_SIZE == 0) {
+				l = BLOCK_SIZE;
+			} else if (l > numBytes) {
+				l = numBytes;
 			}
-			restante = restante - BLOCK_SIZE;
-		}
-		// Si es un bloque cualquiera, escribir por completo
-		else {
-			fprintf(stdout, "[ELSE] Escribiendo bloque en posición %i\n", i);
-			memmove(block, ((i - aux_bloque) * BLOCK_SIZE) + buff, restante);
+
+			restante -= l;
+
+      		if (bread(DEVICE_IMAGE, bloque_id, block) < 0) {
+        		bitmap_setbit(mp.d_map,bloque_id,0);
+				inodos[fileDescriptor].inodosContenidos[i] = -1;
+        		return -1;
+      		}
+
+			memmove((posicion % BLOCK_SIZE) + block, buff, l);
+
 			char *aux = malloc(sizeof(char)*sizeof(block));
-			strcpy(aux,block);
-			bwrite(DEVICE_IMAGE, bloque, aux);
-		}*/
+	 		strcpy(aux,block);
+
+      		if (bwrite(DEVICE_IMAGE, bloque_id, aux) < 0) {
+        		bitmap_setbit(mp.d_map,bloque_id,0);
+				inodos[fileDescriptor].inodosContenidos[i] = -1;
+        		return -1;
+      		}
+		} else if (restante > BLOCK_SIZE) {
+			printf("Medio\n");
+			memmove(block, (numBytes - restante) + buff, BLOCK_SIZE);
+
+			char *aux = malloc(sizeof(char)*sizeof(block));
+	 		strcpy(aux,block);
+
+      		if (bwrite(DEVICE_IMAGE, bloque_id, aux) < 0) {
+        		bitmap_setbit(mp.d_map,bloque_id,0);
+				inodos[fileDescriptor].inodosContenidos[i] = -1;
+        		return -1;
+      		}
+
+			restante -= BLOCK_SIZE;
+		} else {
+			printf("Ultimo\n");
+			printf("Escribiendo %i bytes desde la posición %i en buffer\n", restante, (numBytes - restante));
+			memmove(block, (numBytes - restante) + buff, restante);
+
+			char *aux = malloc(sizeof(char)*sizeof(block));
+	 		strcpy(aux,block);
+
+      		if (bwrite(DEVICE_IMAGE, bloque_id, aux) < 0) {
+        		bitmap_setbit(mp.d_map,bloque_id,0);
+				inodos[fileDescriptor].inodosContenidos[i] = -1;
+        		return -1;
+      		}
+
+			restante = 0;
+		}
 	}
+
+	// for (int i = aux_bloque; i < aux_bloque + bloques_escribir; i++)
+	// {
+	// 	printf("%i\n", i);
+	// 	memset(block, 0, BLOCK_SIZE);
+	// 	int bloque = inodos[fileDescriptor].inodosContenidos[i] + 5;
+	// 	if(i >= inodos[fileDescriptor].cantidadBloquesOcupados) {
+	// 		bloque = alloc();
+	// 		if(bloque < -1) {
+	// 			return -1;
+	// 		}
+	// 		inodos[fileDescriptor].inodosContenidos[i] = bloque;
+	// 		inodos[fileDescriptor].cantidadBloquesOcupados++;
+	// 	}
+	// 	// Si es el primer bloque a escribir, escribir teniendo en cuenta la posición actual
+	// 	if(i == aux_bloque){
+	// 		//fprintf(stdout, "[IF] Escribiendo bloque en posición %i\n", i);
+	// 		if(bread(DEVICE_IMAGE, bloque, block) < 0) {
+	// 			return -1;
+	// 		}
+	// 		int offset = posicion % BLOCK_SIZE;
+	// 		int length = BLOCK_SIZE - offset;
+	// 		fprintf(stdout, "[IF] Escribiendo desde offset %i con longitud %i\n", offset, length);
+	// 		fprintf(stdout,"El buff que escribimos es : %s \n",(char*)buff);
+
+	// 		memmove(offset + block, buff, length);
+	// 		//strcat(block,(char*)buff);   		//ALBARO
+	// 		fprintf(stdout,"El block que escribimos es : %s \n",block);
+	// 		fprintf(stdout,"El bloque que escribimos es : %d \n",bloque);
+	// 		fprintf(stdout,"la posicion que escribimos es : %d \n",posicion);
+	// 		char *aux = malloc(sizeof(char)*sizeof(block));
+	// 		strcpy(aux,block);
+	// 		if(bwrite(DEVICE_IMAGE, bloque, aux) == -1) {
+	// 			return -1;
+	// 		}
+	// 		char b[BLOCK_SIZE + 1];
+	// 		memset(b, 0, BLOCK_SIZE + 1);
+	// 		//fprintf(stdout, "Contenido b: %s\n", b);
+	// 		bread(DEVICE_IMAGE, bloque, b);
+	// 		//fprintf(stdout, "Contenido b: %s\n", b);
+	// 		restante = restante - length;
+	// 	}
+	// 	// Si es el último bloque a escribir, escribir teniendo el cuenta hasta donde se escribe
+	// 	else if (restante > BLOCK_SIZE) {
+	// 		fprintf(stdout, "[ELSE IF] Escribiendo bloque en posición %i\n", i);
+	// 		memmove(block, ((i - aux_bloque) * BLOCK_SIZE) + buff, BLOCK_SIZE);
+	// 		char *aux2 = malloc(sizeof(char)*sizeof(block));
+	// 		strcpy(aux2,block);
+	// 		fprintf(stdout, "El bloque a imprimir es: %d\n",bloque);
+	// 		fprintf(stdout, "El block a imprimir es: %s\n",aux2);
+
+	// 		if(bwrite(DEVICE_IMAGE, bloque, aux2) == -1) {
+	// 			return -1;
+	// 		}
+	// 		restante = restante - BLOCK_SIZE;
+	// 	}
+	// 	// Si es un bloque cualquiera, escribir por completo
+	// 	else {
+	// 		fprintf(stdout, "[ELSE] Escribiendo bloque en posición %i\n", i);
+	// 		memmove(block, ((i - aux_bloque) * BLOCK_SIZE) + buff, restante);
+	// 		char *aux = malloc(sizeof(char)*sizeof(block));
+	// 		strcpy(aux,block);
+	// 		bwrite(DEVICE_IMAGE, bloque, aux);
+	// 	}
+	// }
 	// Actualizar inodos[fd].posición a posición inicial más bytes escritos
 
 	inodos[fileDescriptor].pos += numBytes;
@@ -528,11 +606,11 @@ int closeFileIntegrity(int fileDescriptor)
  */
 int createLn(char *fileName, char *linkName)
 {
-    if(fileExist(fileName)==0){		
+    if(fileExist(fileName)==0){
 		return -1;
 	}
 
-	if (isInodeFull() == -2 || isBlocksFull() == -2) {		
+	if (isInodeFull() == -2 || isBlocksFull() == -2) {
         return -2;
     }
 
