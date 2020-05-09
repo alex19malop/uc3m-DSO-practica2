@@ -457,52 +457,51 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
         		return -1;
       		}
 			printf("\n");
-			printf("Bloque leido %s\n",block);
+			/*printf("Bloque leido %s\n",block);
 			printf("La posicion es %d\n",posicion);
 			printf("El buff es %s\n",(char*)buff);
-			printf("lo que se le suma a block en memove es: %d\n",((posicion % BLOCK_SIZE)));
+			printf("lo que se le suma a block en memove es: %d\n",((posicion % BLOCK_SIZE)));*/
 
 			/*char hola[100] = "hola";
 			char como[100] = "como estas";
-			memcpy(hola + 3, como, strlen(como)); //sin el +4 "como estas",con +3holcomoestas
+			memcpy(hola + 4, como, strlen(como)); //sin el +4 "como estas",con +3holcomoestas
 			printf("result de prueba %s\n",hola);*/
+
+
 			if(strlen((char*)buff) > l){
-				printf("Entra al if\n");
-				printf("l es: %d\n",l);
+				/*printf("Entra al if\n");
+				printf("l es: %d\n",l);*/
 				char *aux0 = malloc(sizeof(char)*l);
 	 			strncpy(aux0,(char*)buff,l);
-				printf("aux0 %s\n",aux0);
-				printf("La longitud de block es: %ld\n",strlen(block));
+				/*printf("aux0 %s\n",aux0);
+				printf("La longitud de block es: %ld\n",strlen(block));*/
 				int tam = (posicion % BLOCK_SIZE);
-				printf("Tam es: %d\n",tam);
+				//printf("Tam es: %d\n",tam);
 				memcpy(block + tam, buff, fmin(strlen(aux0),l));
 
-				printf("El memove es %s\n",(block +(posicion % BLOCK_SIZE)));
-				printf("El block es %s\n", block);
+				/*printf("El memove es %s\n",(block +(posicion % BLOCK_SIZE)));
+				printf("El block es %s\n", block);*/
 				/*char *aux = malloc(sizeof(char)*sizeof(block));
 	 			strcpy(aux,block);*/
 			}
 			else
 			{
-				printf("Entra al else\n");
+				/*printf("Entra al else\n");
 				printf("l es: %d\n",l);
-				char *aux0 = malloc(sizeof(char)*sizeof(buff));
-	 			strcpy(aux0,(char*)buff);
-				printf("aux0 %s\n",aux0);
-				printf("La longitud de block es: %ld\n",strlen(block));
+				printf("La longitud de block es: %ld\n",strlen(block));*/
 				int tam = (posicion % BLOCK_SIZE);
-				printf("Tam es: %d\n",tam);
-				memcpy(block + tam, aux0, fmin(strlen(aux0),l));
+				//printf("Tam es: %d\n",tam);
+				memcpy(block + tam, (char*)buff, fmin(strlen((char*)buff),l));
 
-				printf("El memove es %s\n",(block +(posicion % BLOCK_SIZE)));
-				printf("El block es %s\n", block);
+				/*printf("El memove es %s\n",(block +(posicion % BLOCK_SIZE)));
+				printf("El block es %s\n", block);*/
 
 			}
 			char *aux = malloc(sizeof(char)*sizeof(block));
 	 		strcpy(aux,block);
 			
 
-
+			printf("El bloque id es: ")
       		if (bwrite(DEVICE_IMAGE, bloque_id, aux) < 0) {
         		bitmap_setbit(mp.d_map,bloque_id,0);
 				inodos[fileDescriptor].inodosContenidos[i] = -1;
@@ -511,9 +510,6 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
       		}
 
 			printf("El bloque_id es %d\n",bloque_id);
-			/*char *aux5 = malloc(sizeof(char)*sizeof(block));
-			bread(DEVICE_IMAGE, bloque_id, aux5);
-			printf("Aux2 es: %s\n",aux5);*/
 
 		} else if (restante > BLOCK_SIZE) {
 			//printf("Medio\n");
