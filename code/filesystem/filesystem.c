@@ -374,7 +374,25 @@ int closeFile(int fileDescriptor)
  */
 int readFile(int fileDescriptor, void *buffer, int numBytes)
 {
-	return -1;
+	/* Si está cerrado no se puede hacer un read */
+    if(inodos[fileDescriptor].open == 0) {
+        return -1;
+    }
+	//Si el inodo donde se quiere escribir no tiene fichero
+	if (bitmap_getbit(mp.i_map,fileDescriptor) == 0) {
+		return -1;
+	}
+	/* Ajustar numBytes al tamaño máximo del fichero */
+	if ((inodos[fileDescriptor].pos + numBytes) > MAX_FILE_SIZE) {
+		numBytes = MAX_FILE_SIZE - inodos[fileDescriptor].pos;
+	}
+
+	if (numBytes <= 0) {
+		return -1;
+	}
+
+	// Calcular numero de bloques que se van leer
+	int bloques_escribir = (numBytes + BLOCK_SIZE - 1) / BLOCK_SIZE;
 }
 
 /*
@@ -427,16 +445,27 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
 	for (int i = aux_bloque; i < aux_bloque + bloques_escribir; i++)
 	{
 		memset(block, 0, BLOCK_SIZE);
-		int bloque_id = inodos[fileDescriptor].inodosContenidos[i] + sbloque.primerBloqueDatos;
-
+		int bloque_id;
+		printf("La i es: %d\n",i);
+		printf("inodos[fileDescriptor].inodosContenidos[i] = %d\n",inodos[fileDescriptor].inodosContenidos[i]);
+		printf("sbloque.primerBloqueDatos = %d\n",sbloque.primerBloqueDatos);
+		printf("El bloque_id del for es %d\n",bloque_id);
+		printf("inodos[fileDescriptor].cantidadBloquesOcupados %d\n",inodos[fileDescriptor].cantidadBloquesOcupados);
   		if (i >= inodos[fileDescriptor].cantidadBloquesOcupados) {
 			bloque_id = alloc() + sbloque.primerBloqueDatos;
 			if(bloque_id < -1) {
 				return -1;
 			}
-			inodos[fileDescriptor].inodosContenidos[i] = bloque_id;
+			
+			printf("El bloque_id del for_aux es %d\n",bloque_id);
+			inodos[fileDescriptor].inodosContenidos[i] = bloque_id-sbloque.primerBloqueDatos;
 			inodos[fileDescriptor].cantidadBloquesOcupados++;
   		}
+		else
+		{
+		 	bloque_id = inodos[fileDescriptor].inodosContenidos[i] + sbloque.primerBloqueDatos;
+		}
+		  
 
 		//printf("Bloque %i en la posición %i\n", bloque_id, i);
 
@@ -456,7 +485,7 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
 				inodos[fileDescriptor].inodosContenidos[i] = -1;
         		return -1;
       		}
-			printf("\n");
+			
 			/*printf("Bloque leido %s\n",block);
 			printf("La posicion es %d\n",posicion);
 			printf("El buff es %s\n",(char*)buff);
@@ -501,7 +530,7 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
 	 		strcpy(aux,block);
 			
 
-			printf("El bloque id es: ")
+			printf("El bloque_id del if es %d\n",bloque_id);
       		if (bwrite(DEVICE_IMAGE, bloque_id, aux) < 0) {
         		bitmap_setbit(mp.d_map,bloque_id,0);
 				inodos[fileDescriptor].inodosContenidos[i] = -1;
@@ -509,10 +538,11 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
         		return -1;
       		}
 
-			printf("El bloque_id es %d\n",bloque_id);
+			
 
 		} else if (restante > BLOCK_SIZE) {
 			//printf("Medio\n");
+			printf("El bloque_id del else if es %d\n",bloque_id);
 			memmove(block, (numBytes - restante) + buff, BLOCK_SIZE);
 
 			char *aux = malloc(sizeof(char)*sizeof(block));
@@ -527,7 +557,8 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
 			restante -= BLOCK_SIZE;
 		} else {
 			//printf("Ultimo\n");
-			printf("Escribiendo %i bytes desde la posición %i en buffer\n", restante, (numBytes - restante));
+			printf("El bloque_id del else es %d\n",bloque_id);
+			//printf("Escribiendo %i bytes desde la posición %i en buffer\n", restante, (numBytes - restante));
 			memmove(block, (numBytes - restante) + buff, restante);
 
 			char *aux = malloc(sizeof(char)*sizeof(block));
@@ -544,6 +575,7 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
 	}
 	inodos[fileDescriptor].pos += numBytes-1;
 	inodos[fileDescriptor].tamanyo = inodos[fileDescriptor].pos;
+	printf("\n");
 	return numBytes;
 }
 
