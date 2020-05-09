@@ -374,6 +374,7 @@ int closeFile(int fileDescriptor)
  */
 int readFile(int fileDescriptor, void *buff, int numBytes)
 {
+	memset(buff, '\0', numBytes);
 	/* Si está cerrado no se puede hacer un read */
     if(inodos[fileDescriptor].open == 0) {
         return -1;
@@ -402,9 +403,9 @@ int readFile(int fileDescriptor, void *buff, int numBytes)
 
 	for (int i = aux_bloque; i < aux_bloque + bloques_leer; i++)
 	{
-		memset(block, 0, BLOCK_SIZE);
+		//memset(block, '\0', BLOCK_SIZE);
 		int bloque_id = inodos[fileDescriptor].inodosContenidos[i] + sbloque.primerBloqueDatos;
-		//printf("Bloque %i en la posición %i\n", bloque_id, i);
+		printf("Bloque %i en la posición %i\n", bloque_id, i);
 
 		if (bread(DEVICE_IMAGE, bloque_id, block) < 0) {
         	return -1;
@@ -415,20 +416,27 @@ int readFile(int fileDescriptor, void *buff, int numBytes)
 			int l = BLOCK_SIZE - (posicion % BLOCK_SIZE); // Longitud a escribir con memmove
 			if(posicion % BLOCK_SIZE == 0) {
 				l = BLOCK_SIZE;
-			} else if (l > numBytes) {
+			} 
+			
+			if (l > numBytes) {
 				l = numBytes;
 			}
 
 			restante -= l;
 
-			memmove(buff, (posicion % BLOCK_SIZE) + block, l);
+			printf("[%i] OFFSET BLOQUE: %i, LONGITUD: %i OK\n", i, (posicion % BLOCK_SIZE), l);
+			memcpy(buff, (posicion % BLOCK_SIZE) + block, l);
 		} else if (restante > BLOCK_SIZE) {
-			memmove((numBytes - restante) + buff, block, BLOCK_SIZE);
+			printf("[%i] OFFSET BUFF: %i, LONGITUD: %i OK\n", i, (numBytes - restante), BLOCK_SIZE);
+			memcpy((numBytes - restante) + &(buff), block, BLOCK_SIZE);
 			restante -= BLOCK_SIZE;
 		} else {
-			memmove((numBytes - restante) + buff, block, restante);
+			printf("[%i] OFFSET BUFF: %i, LONGITUD: %i OK\n", i, (numBytes - restante), restante);
+			memcpy((numBytes - restante) + buff, block, restante);
 			restante = 0;
 		}
+					printf("%s\n", block);
+			printf("%s\n", (char *)buff);
 	}
 
 	// for (int i = aux_bloque; i < aux_bloque + bloques_leer; i++)
@@ -668,7 +676,9 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
 			int l = BLOCK_SIZE - (posicion % BLOCK_SIZE); // Longitud a escribir con memmove
 			if(posicion % BLOCK_SIZE == 0) {
 				l = BLOCK_SIZE;
-			} else if (l > numBytes) {
+			} 
+			
+			if (l > numBytes) {
 				l = numBytes;
 			}
 

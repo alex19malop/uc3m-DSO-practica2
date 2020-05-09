@@ -439,7 +439,7 @@ int main()
 	writeFile(fd, buffer1, strlen(buffer1)+1);
 	closeFile(fd);
 	
-	char *lectura = malloc(sizeof(char*));
+	char lectura[4096];
 	fd = openFile("/test1.txt");
 	ret = readFile(fd, lectura, 19);
 	
@@ -469,7 +469,7 @@ int main()
 	writeFile(fd, buffer1, strlen(buffer1)+1);
 	closeFile(fd);
 	//No lo he reabierto
-	char *lectura = malloc(sizeof(char*));
+	char lectura[4096];
 	ret = readFile(fd, lectura, 19);
 
 	printf("El valor leido es: %s\n",lectura);
@@ -491,7 +491,7 @@ int main()
 	/* Prueba en la que se intenta leer en un archivo cuyo inodo no existe,
 	por lo que deberá devolver 0 */
 
-	/*char *lectura = malloc(sizeof(char*));
+	/*char lectura[4096];
 	ret = readFile(15, lectura, 19);
 
 	printf("El valor leido es: %s\n",lectura);
@@ -519,7 +519,7 @@ int main()
 	ret = writeFile(fd, buffer1, strlen(buffer1)+1);
 	closeFile(fd);
 
-	char *lectura = malloc(sizeof(char*));
+	char lectura[4096];
 	fd = openFile("/test1.txt");
 	ret = readFile(fd, lectura, 5121);
 
@@ -554,9 +554,10 @@ int main()
 	ret = writeFile(fd, buffer3, strlen(buffer3)+1);
 	closeFile(fd);
 
-	char *lectura1 = malloc(sizeof(char*));
-	char *lectura2 = malloc(sizeof(char*));
-	char *lectura3 = malloc(sizeof(char*));
+	char lectura1[4096];
+	char lectura2[4096];
+	char lectura3[4096];
+
 	fd = openFile("/test1.txt");
 	ret = readFile(fd, lectura1, 14);
 	ret = readFile(fd, lectura2, 14);
@@ -575,8 +576,8 @@ int main()
 		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.8.5 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
 		return -1;
 	}
-	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.8.5 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);*/
-
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.8.5 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+*/
 
 	/****************************************************************
 	*						  TEST F1.8.6 						    *
@@ -597,8 +598,8 @@ int main()
 	fd1 = openFile("/test1.txt");
 	fd2 = openFile("/test2.txt");
 
-	char *lectura1 = malloc(sizeof(char*));
-	char *lectura2 = malloc(sizeof(char*));
+	char lectura1[4096];
+	char lectura2[4096];
 
 	int ret1 = readFile(fd1, lectura1, 14);
 	int ret2 = readFile(fd2, lectura2, 14);
@@ -642,23 +643,23 @@ int main()
 	closeFile(fd1);
 	closeFile(fd2);
 
-	char *lectura1 = malloc(sizeof(char*));
-	//char *lectura2 = malloc(sizeof(char*));
+	char lectura1[4096];
+	char lectura2[4096];
 
 	fd1 = openFile("/test1.txt");
 	int ret1 = readFile(fd1, lectura1, 2048+14);
 
-	/*fd2 = openFile("/test2.txt");
-	int ret2 = readFile(fd2, lectura2, 14);*/
+	fd2 = openFile("/test2.txt");
+	int ret2 = readFile(fd2, lectura2, 14);
 
 	printf("El valor leido de lectura1 es: %s\n",lectura1);
-	//printf("El valor leido de lectura2 es: %s\n",lectura2);
+	printf("El valor leido de lectura2 es: %s\n",lectura2);
 
 
 
 
 
-	if (ret1 == -1 )
+	if (ret1 == -1 || ret2 == -1 )
 	{
 	   	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.8.7 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
 	   	return -1;
