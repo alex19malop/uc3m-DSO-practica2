@@ -428,15 +428,15 @@ int readFile(int fileDescriptor, void *buff, int numBytes)
 			memcpy(buff, (posicion % BLOCK_SIZE) + block, l);
 		} else if (restante > BLOCK_SIZE) {
 			printf("[%i] OFFSET BUFF: %i, LONGITUD: %i OK\n", i, (numBytes - restante), BLOCK_SIZE);
-			memcpy((numBytes - restante) + &(buff), block, BLOCK_SIZE);
+			memcpy((numBytes - restante) + buff, block, BLOCK_SIZE);
 			restante -= BLOCK_SIZE;
 		} else {
 			printf("[%i] OFFSET BUFF: %i, LONGITUD: %i OK\n", i, (numBytes - restante), restante);
 			memcpy((numBytes - restante) + buff, block, restante);
 			restante = 0;
 		}
-					printf("%s\n", block);
-			printf("%s\n", (char *)buff);
+			//printf("%s\n", block);
+			//printf("%s\n", (char *)buff);
 	}
 
 	// for (int i = aux_bloque; i < aux_bloque + bloques_leer; i++)
