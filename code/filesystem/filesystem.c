@@ -26,6 +26,7 @@ mapas mp;
 inodo inodos[48];
 int mkFS_done = -1;
 int mountFS_done = -1;
+int integridadUsada[48];
 
 /*
  * @brief 	Generates the proper file system structure in a storage device, as designed by the student.
@@ -63,6 +64,7 @@ int mkFS(long deviceSize)
 		{
 			inodos[i].relleno[j] = 0;
 		}
+		integridadUsada[i] = 0;
 	}
 
 	for (int i = 0; i < 2004; i++)
@@ -354,6 +356,9 @@ int closeFile(int fileDescriptor)
     if (inodos[fileDescriptor].open == 0){
         return -1;
     }
+	if(integridadUsada[fileDescriptor] == 1) {
+		return -1;
+	}
 	// Si es enlace simbolico, se cierra tambien el archivo original, pero solo si se ha abierto
 	// por el enlace simbolico
 	if (inodos[fileDescriptor].tipo == 0){
@@ -374,6 +379,10 @@ int closeFile(int fileDescriptor)
  */
 int readFile(int fileDescriptor, void *buff, int numBytes)
 {
+	if (inodos[fileDescriptor].tipo == 0){
+		int indice = inodos[fileDescriptor].inodosContenidos[0];
+		fileDescriptor = indice;
+	}
 	memset(buff, '\0', numBytes);
 	/* Si está cerrado no se puede hacer un read */
     if(inodos[fileDescriptor].open == 0) {
@@ -451,6 +460,10 @@ int readFile(int fileDescriptor, void *buff, int numBytes)
 //Escribe a partir del punterp de posición interno
 int writeFile(int fileDescriptor, void *buff, int numBytes)
 {
+	if (inodos[fileDescriptor].tipo == 0){
+		int indice = inodos[fileDescriptor].inodosContenidos[0];
+		fileDescriptor = indice;
+	}
     /* Si está cerrado no se puede hacer un write */
     if(inodos[fileDescriptor].open == 0) {
         return -1;
@@ -494,11 +507,7 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
 	{
 		memset(block, 0, BLOCK_SIZE);
 		int bloque_id;
-		/*printf("La i es: %d\n",i);
-		printf("inodos[fileDescriptor].inodosContenidos[i] = %d\n",inodos[fileDescriptor].inodosContenidos[i]);
-		printf("sbloque.primerBloqueDatos = %d\n",sbloque.primerBloqueDatos);
-		printf("El bloque_id del for es %d\n",bloque_id);
-		printf("inodos[fileDescriptor].cantidadBloquesOcupados %d\n",inodos[fileDescriptor].cantidadBloquesOcupados);*/
+
   		if (i >= inodos[fileDescriptor].cantidadBloquesOcupados) {
 			bloque_id = alloc() + sbloque.primerBloqueDatos;
 			if(bloque_id < -1) {
@@ -515,10 +524,9 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
 		}
 		  
 
-		//printf("Bloque %i en la posición %i\n", bloque_id, i);
 
 		if (i == aux_bloque) {
-			//printf("Primero\n");
+
 			int l = BLOCK_SIZE - (posicion % BLOCK_SIZE); // Longitud a escribir con memmove
 			if(posicion % BLOCK_SIZE == 0) {
 				l = BLOCK_SIZE;
@@ -535,45 +543,18 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
 				inodos[fileDescriptor].inodosContenidos[i] = -1;
         		return -1;
       		}
+			//sprintf(buff,"%p",buff);
 			
-			/*printf("Bloque leido %s\n",block);
-			printf("La posicion es %d\n",posicion);
-			printf("El buff es %s\n",(char*)buff);
-			printf("lo que se le suma a block en memove es: %d\n",((posicion % BLOCK_SIZE)));*/
-
-			/*char hola[100] = "hola";
-			char como[100] = "como estas";
-			memcpy(hola + 4, como, strlen(como)); //sin el +4 "como estas",con +3holcomoestas
-			printf("result de prueba %s\n",hola);*/
-
-
 			if(strlen((char*)buff) > l){
-				/*printf("Entra al if\n");
-				printf("l es: %d\n",l);*/
 				char *aux0 = malloc(sizeof(char)*l);
 	 			strncpy(aux0,(char*)buff,l);
-				/*printf("aux0 %s\n",aux0);
-				printf("La longitud de block es: %ld\n",strlen(block));*/
 				int tam = (posicion % BLOCK_SIZE);
-				//printf("Tam es: %d\n",tam);
 				memcpy(block + tam, buff, fmin(strlen(aux0),l));
-
-				/*printf("El memove es %s\n",(block +(posicion % BLOCK_SIZE)));
-				printf("El block es %s\n", block);*/
-				/*char *aux = malloc(sizeof(char)*sizeof(block));
-	 			strcpy(aux,block);*/
 			}
 			else
 			{
-				/*printf("Entra al else\n");
-				printf("l es: %d\n",l);
-				printf("La longitud de block es: %ld\n",strlen(block));*/
 				int tam = (posicion % BLOCK_SIZE);
-				//printf("Tam es: %d\n",tam);
 				memcpy(block + tam, (char*)buff, fmin(strlen((char*)buff),l));
-
-				/*printf("El memove es %s\n",(block +(posicion % BLOCK_SIZE)));
-				printf("El block es %s\n", block);*/
 
 			}
 			char *aux = malloc(sizeof(char)*sizeof(block));
@@ -588,11 +569,9 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
         		return -1;
       		}
 
-			
+
 
 		} else if (restante > BLOCK_SIZE) {
-			//printf("Medio\n");
-			//printf("El bloque_id del else if es %d\n",bloque_id);
 			memmove(block, (numBytes - restante) + buff, BLOCK_SIZE);
 
 			char *aux = malloc(sizeof(char)*sizeof(block));
@@ -606,9 +585,6 @@ int writeFile(int fileDescriptor, void *buff, int numBytes)
 
 			restante -= BLOCK_SIZE;
 		} else {
-			//printf("Ultimo\n");
-			//printf("El bloque_id del else es %d\n",bloque_id);
-			//printf("Escribiendo %i bytes desde la posición %i en buffer\n", restante, (numBytes - restante));
 			memmove(block, (numBytes - restante) + buff, restante);
 
 			char *aux = malloc(sizeof(char)*sizeof(block));
@@ -641,12 +617,18 @@ int lseekFile(int fileDescriptor, long offset, int whence)
 	if ((whence < 0) || (whence > 2)){
         return -1;
     }
+	//Si el inodo no existe
+	if (bitmap_getbit(mp.i_map,fileDescriptor) == 0) {
+		return -1;
+	}
 	if (inodos[fileDescriptor].tipo == 0){
 		int indice = inodos[fileDescriptor].inodosContenidos[0];
 		fileDescriptor = indice;
 	}
 	//caso SEEK_CUR
 	if (whence == 0){
+		printf("Estoy en el SEEK_CUR con tamanyo %d\n",inodos[fileDescriptor].tamanyo);
+
 		if (inodos[fileDescriptor].pos + offset < 0 || inodos[fileDescriptor].pos + offset > 2048){
 			return -1;
 		}
@@ -658,11 +640,13 @@ int lseekFile(int fileDescriptor, long offset, int whence)
 	}
 	//caso SEEK_END
 	if (whence == 1){
-		inodos[fileDescriptor].pos = inodos[fileDescriptor].tamanyo;
+		printf("Estoy en el SEEK_END con tamanyo %d\n",inodos[fileDescriptor].tamanyo);
+		inodos[fileDescriptor].pos = inodos[fileDescriptor].tamanyo-1;
 		return 0;
 	}
 	//caso SEEK_BEGIN
 	if (whence == 2){	
+		printf("Estoy en el SEEK_BEGIN con tamanyo %d\n",inodos[fileDescriptor].tamanyo);
 		inodos[fileDescriptor].pos = 0;
 		return 0;
 	}
@@ -676,16 +660,130 @@ int lseekFile(int fileDescriptor, long offset, int whence)
 
 int checkFile (char * fileName)
 {
+	// Si no existe el fichero se devuelve -1
+	if(busca_inodo(fileName) == -1 ){
+		return -2;
+	}
+
+	//0. Abrir el archivo
+	int abierto = openFile(fileName); // Devuelve -2 si no existe el archivo o ya esta abierto, devuelve en node_id si lo ha abierto
+
+    /*Si está abierto, se busca cual es su fileDescriptor correspondiente. 
+	Se hace un backup de la posición y se resetea a 0, se lee con readFile a un buffer del tamaño del archivo 
+	y se restaura posicion*/
+	
+	if (abierto == -2) {
+		puts("Metido en abierto\n");
+		int fd = busca_inodo(fileName);
+		int posicion_guardada = inodos[fd].pos;
+		inodos[fd].pos = 0;
+		char buff[inodos[fd].tamanyo];
+		readFile(fd, buff, inodos[fd].tamanyo + 1);
+		inodos[fd].pos = posicion_guardada;
+
+		printf("El buffer con fichero abierto previamente es: %s\n", buff);
+
+		//1. Se pasa el buffer a CRC32
+		uint32_t val = CRC32((unsigned char*)buff, inodos[fd].tamanyo);
+		//2. Se compara el valor de CRC32 con el de inodos[i].integridad
+		if(inodos[fd].integridad != val){
+			puts("ARCHIVO CORRUPTO Y ABIERTO\n");
+			return -1;
+		}
+		else {
+			puts("ARCHIVO NO CORRUPTO Y ABIERTO\n");
+			return 0;
+		}
+
+	}
+	//Si no está abierto, se abre el archivo, se lee con readFile y se cierra
+	else if(abierto >= 0) {
+		puts("Entra en no abierto\n");
+		char buff[inodos[abierto].tamanyo];
+		readFile(abierto, buff, inodos[abierto].tamanyo + 1);
+		closeFile(abierto);
+
+		printf("El buffer con fichero sin estar abierto es: %s\n", buff);
+
+		//1. Se pasa el buffer a CRC32
+		uint32_t val = CRC32((unsigned char*)buff, inodos[abierto].tamanyo);
+	
+		//2. Se compara el valor de CRC32 con el de inodos[i].integridad
+		if(inodos[abierto].integridad != val){
+			puts("ARCHIVO CORRUPTO Y NO ABIERTO\n");
+			return -1;
+		}
+		else {
+			puts("ARCHIVO NO CORRUPTO Y NO ABIERTO\n");
+			return 0;
+		}
+	}
+	// error en el open
+	else{ 
+		return -2;
+	}
     return -2;
 }
+
 
 /*
  * @brief	Include integrity on a file.
  * @return	0 if success, -1 if the file does not exists, -2 in case of error.
  */
-
 int includeIntegrity (char * fileName)
 {
+	// Si no existe el fichero se devuelve -1
+	if(busca_inodo(fileName) == -1 ){
+		return -1;
+	}
+
+	//0. Abrir el archivo
+	int abierto = openFile(fileName); // Devuelve -2 si no existe el archivo o ya esta abierto, devuelve en node_id si lo ha abierto
+
+    /*Si está abierto, se busca cual es su fileDescriptor correspondiente. 
+	Se hace un backup de la posición y se resetea a 0, se lee con readFile a un buffer del tamaño del archivo 
+	y se restaura posicion*/
+	
+	if (abierto == -2) {
+		puts("Metido en abierto\n");
+		int fd = busca_inodo(fileName);
+		int posicion_guardada = inodos[fd].pos;
+		inodos[fd].pos = 0;
+		char buff[inodos[fd].tamanyo];
+		readFile(fd, buff, inodos[fd].tamanyo + 1);
+		inodos[fd].pos = posicion_guardada;
+
+		printf("El buffer con fichero abierto previamente es: %s\n", buff);
+
+		//1. Se pasa el buffer a CRC32
+		uint32_t val = CRC32((unsigned char*)buff, inodos[fd].tamanyo);
+		//2. Se sobrescribe el valor de CRC32 en inodos[i].integridad
+		inodos[fd].integridad = val;
+
+		return 0;
+	}
+	//Si no está abierto, se abre el archivo, se lee con readFile y se cierra
+	else if(abierto >= 0) {
+		puts("Entra en no abierto\n");
+		char buff[inodos[abierto].tamanyo];
+
+		readFile(abierto, buff, inodos[abierto].tamanyo + 1);
+		closeFile(abierto);
+
+		printf("El buffer con fichero sin estar abierto es: %s\n", buff);
+
+		//1. Se pasa el buffer a CRC32
+		uint32_t val = CRC32((unsigned char*)buff, inodos[abierto].tamanyo);
+		//2. Se sobrescribe el valor de CRC32 en inodos[i].integridad
+		inodos[abierto].integridad = val;
+
+		return 0;
+	}
+	// error en el open
+	else{ 
+		printf("ERROR EN EL OPEN");
+		return -2;
+	}
     return -2;
 }
 
@@ -695,8 +793,69 @@ int includeIntegrity (char * fileName)
  */
 int openFileIntegrity(char *fileName)
 {
+	if(fileExist(fileName) == 0){
+        return -1;
+    }
+    int inodo_id;
+    // buscar el inodo asociado al nombre
+    inodo_id = busca_inodo(fileName);
+    if (inodo_id < 0){
+		printf("EL ARCHIVO NO EXISTE\n");
+        return -3;
+    }
+    // Controlo que no esté ya abierto
+    if (inodos[inodo_id].open == 1){
+		printf("EL ARCHIVO YA ESTA ABIERTO\n");
+        return -3;
+    }
 
-    return -2;
+
+	//Si es enlace simbolico abre tambien el archivo al que referencia
+	if (inodos[inodo_id].tipo == 0){
+		int indice = inodos[inodo_id].inodosContenidos[0];
+		inodos[indice].open = 1;
+		inodos[indice].pos = 0;
+		if (inodos[indice].integridad == 0) {
+			printf("LA INTEGRIDAD NO HA SIDO CALCULADA PREVIAMENTE\n");
+			return -3;
+		}
+		int check = checkFile(inodos[indice].nombre);
+		// iniciar sesión de trabajo
+	    inodos[inodo_id].pos = 0;
+    	inodos[inodo_id].open = 1;
+		integridadUsada[indice] = 1;
+		// El fichero esta corrupto
+		if (check == -1) {
+			return -2;
+		}
+		else if (check == -2)
+		{
+			return -1;
+		}
+    	return inodo_id;
+	}
+	// El fichero no tiene integridad calculada
+	if (inodos[inodo_id].integridad == 0) {
+		printf("LA INTEGRIDAD NO HA SIDO CALCULADA PREVIAMENTE\n");
+		return -3;
+	}
+
+    // iniciar sesión de trabajo
+    inodos[inodo_id].pos = 0;
+    inodos[inodo_id].open = 1;
+
+	int check = checkFile(fileName);
+	integridadUsada[inodo_id] = 1;
+	// El fichero esta corrupto
+	if (check == -1) {
+		return -2;
+	}
+	else if (check == -2)
+	{
+		return -1;
+	}
+    return inodo_id;
+
 }
 
 /*
@@ -705,7 +864,64 @@ int openFileIntegrity(char *fileName)
  */
 int closeFileIntegrity(int fileDescriptor)
 {
-    return -1;
+	// comprobar descriptor válido
+    if ((fileDescriptor < 0) || (fileDescriptor > sbloque.numInodos - 1)){
+		printf("Marca1");
+        return -1;
+    }
+    // comprobar que ya está cerrado
+    if (inodos[fileDescriptor].open == 0){
+		printf("Marca2");
+        return -1;
+    }
+
+
+	
+	// Si es enlace simbolico, se cierra tambien el archivo original, pero solo si se ha abierto
+	// por el enlace simbolico
+	if (inodos[fileDescriptor].tipo == 0){
+		int indice = inodos[fileDescriptor].inodosContenidos[0];
+		if(integridadUsada[indice] == 0)
+		{
+			printf("Marca3");
+			return -1;
+		}
+		inodos[indice].open = 0;
+		inodos[indice].pos = 0;
+		// cerrar sesión de trabajo
+    	inodos[fileDescriptor].pos = 0;
+    	inodos[fileDescriptor].open = 0;
+		printf("Mi nombre es: %s\n",inodos[indice].nombre);
+
+		includeIntegrity(inodos[indice].nombre);
+
+		integridadUsada[indice] = 0;
+		inodos[indice].open = 0;
+		inodos[indice].pos = 0;
+		// cerrar sesión de trabajo
+    	inodos[fileDescriptor].pos = 0;
+    	inodos[fileDescriptor].open = 0;
+
+		printf("HOLA\n");
+	}
+	else{
+		if (integridadUsada[fileDescriptor] == 0)
+		{
+			printf("Marca3");
+			return -1;
+		}
+		// cerrar sesión de trabajo
+    	inodos[fileDescriptor].pos = 0;
+    	inodos[fileDescriptor].open = 0;
+
+		includeIntegrity(inodos[fileDescriptor].nombre);
+
+		inodos[fileDescriptor].pos = 0;
+    	inodos[fileDescriptor].open = 0;
+		integridadUsada[fileDescriptor] = 0;
+	}
+	
+    return 0;
 }
 
 /*
@@ -795,7 +1011,7 @@ void fullInodeMap() {
 }
 
 void fullBlockMap() {
-    for (int i = 0; i < 38; i++){
+    for (int i = 0; i < sbloque.numBloquesDatos; i++){
         bitmap_setbit(mp.d_map,i,1);
     }
 }
@@ -815,7 +1031,7 @@ void printSystem() {
 	}
 
 	fprintf(stdout, "\n\nMapa de bits de bloques\n");
-	for (int i = 0; i < 300; i++){
+	for (int i = 0; i < sbloque.numBloquesDatos; i++){
 		if (bitmap_getbit(mp.d_map,i) == 0) {
 			fprintf(stdout, "%d",0);
 		}

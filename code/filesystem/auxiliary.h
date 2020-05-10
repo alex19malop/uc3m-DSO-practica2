@@ -9,4 +9,9 @@
  * @date	Last revision 01/04/2020
  *
  */
+void printSystem();
+
+void fullInodeMap();
+
+void fullBlockMap();
 

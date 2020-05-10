@@ -15,6 +15,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "filesystem/filesystem.h"
+#include "filesystem/auxiliary.h"
 
 
 // Color definitions for asserts
@@ -106,8 +107,8 @@ int main()
 	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.4.1 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
 
 
-	printSystem();
-*/
+	printSystem();*/
+
 	/****************************************************************
 	*						TEST F1.4.2 						    *
 	****************************************************************/
@@ -142,6 +143,8 @@ int main()
 	int a;
 	a = createFile("/test1.txt");
 
+	printSystem();
+
 
 	if (a == -2)
 	{
@@ -152,6 +155,7 @@ int main()
 		return -1;
 	}*/
 
+
 	/****************************************************************
 	*						TEST F1.4.4 						    *
 	****************************************************************/
@@ -161,6 +165,7 @@ int main()
 	/*fullBlockMap();
 	int a;
 	a = createFile("/test1.txt");
+	printSystem();
 
 
 	if (a == -2)
@@ -223,13 +228,14 @@ int main()
 	*						TEST F1.5.3						    *
 	****************************************************************/
 	/* Prueba basica de creacion de 1 archivo y eliminacion de un enlace existente,
-	a través de la funcion de eliminar archivos removeFile */
-	/*
-	int x;
+	a través de la funcion de eliminar archivos removeFile, cosa que seria erronea hacer */
+	
+	/*int x;
 	createFile("/test1.txt");
 	createLn("/test1.txt","enlace1");
-	printSystem();
+	
 	x = removeFile("enlace1");
+	printSystem();
 
 	if (x != -2)
 	{
@@ -237,8 +243,8 @@ int main()
 		return -1;
 	}
 	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.5.3 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
-
-	*/
+*/
+	
 
 	/****************************************************************
 	*						 TEST F1.5.4 			 			    *
@@ -284,8 +290,8 @@ int main()
 		return -1;
 	}
 	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.6.1  ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
-
-	*/
+*/
+	
 
 	/****************************************************************
 	*						  TEST F1.6.2						    *
@@ -356,6 +362,7 @@ int main()
 	createFile("/test1.txt");
 	openFile("/test1.txt");
 	e = closeFile(0);
+	printSystem();
 	if (e == -1)
 	{
 		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.7.1  ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
@@ -406,8 +413,8 @@ int main()
 	*						TEST F1.7.4						    	*
 	****************************************************************/
 	/* Prueba en la cual se cierra un archivo a través del enlace simbolico*/
-	/*
-	int a;
+	
+	/*int a;
 	createFile("/test1.txt");
 	createLn("/test1.txt","enlace1");
 	openFile("enlace1");
@@ -506,6 +513,7 @@ int main()
 	}
 	printSystem();*/
 
+
 	/****************************************************************
 	*						  TEST F1.8.4 						    *
 	****************************************************************/
@@ -576,9 +584,8 @@ int main()
 		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.8.5 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
 		return -1;
 	}
-	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.8.5 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.8.5 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);*/
 
-*/
 
 	/****************************************************************
 	*						  TEST F1.8.6 						    *
@@ -891,8 +898,550 @@ int main()
    		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.10.1 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
    		return -1;
 	}
-	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.10.1 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.10.1 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);*/
+	
+
+
+	/****************************************************************
+	*						  TEST F1.10.2						    *
+	****************************************************************/
+	//Prueba de caso SEEK_END
+
+	/*createFile("/test1.txt");
+	createFile("/test2.txt");
+	createFile("/test3.txt");
+	createFile("/test4.txt");
+	int fd = openFile("/test1.txt");
+	char *buffer1 = "esto es una prueba";
+	ret = writeFile(fd, buffer1, strlen(buffer1)+1);
+	printSystem();
+
+	closeFile(fd);
+
+	int a = lseekFile(fd, 3L, FS_SEEK_END);
+	printSystem();
+
+	if (a == -1)
+	{
+   		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.10.2 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+   		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.10.2 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);*/
+
+
+	/****************************************************************
+	*						  TEST F1.10.3						    *
+	****************************************************************/
+	//Prueba de caso SEEK_BEGIN
+
+	/*createFile("/test1.txt");
+	createFile("/test2.txt");
+	createFile("/test3.txt");
+	createFile("/test4.txt");
+	int fd = openFile("/test1.txt");
+	char *buffer1 = "esto es una prueba";
+	ret = writeFile(fd, buffer1, strlen(buffer1)+1);
+	printSystem();
+
+	//closeFile(fd);
+
+	int a = lseekFile(fd, 3L, FS_SEEK_BEGIN);
+	printSystem();
+
+	if (a == -1)
+	{
+   		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.10.3 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+   		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.10.3 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+*/
+
+	/****************************************************************
+	*						  TEST F1.10.4						    *
+	****************************************************************/
+	/*Comprobacion de obtener un numero de inodo incorrecto*/
+/*
+	createFile("/test1.txt");
+	int fd = openFile("/test1.txt");
+	char *buffer1 = "esto es una prueba";
+	ret = writeFile(fd, buffer1, strlen(buffer1)+1);
+	//printSystem();
+	int a = lseekFile(-1, 3L, FS_SEEK_CUR);
+	int b = lseekFile(500, 3L, FS_SEEK_CUR);
+	printf("A: %i\nB: %i\n",a,b);
+	printSystem();
+	//closeFile(fd);
+
+	if (a != -1 && b != -1)
+	{
+   		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.10.4 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+   		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.10.4 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+*/	
+
+	/****************************************************************
+	*						  TEST F1.10.5						    *
+	****************************************************************/
+	/*Comprobacion de obtener un numero de whence incorrecto*/
+
+	/*createFile("/test1.txt");
+	int fd = openFile("/test1.txt");
+	char *buffer1 = "esto es una prueba";
+	ret = writeFile(fd, buffer1, strlen(buffer1)+1);
+	//printSystem();
+	int a = lseekFile(1, 3L, -1);
+	int b = lseekFile(1, 3L, 3);
+	
+	printf("A: %i\nB: %i\n",a,b);
+	printSystem();
+	//closeFile(fd);
+
+	if (a != -1 && b != -1)
+	{
+   		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.10.5 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+   		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.10.5 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+*/
+
+	/****************************************************************
+	*						  TEST F1.10.6						    *
+	****************************************************************/
+	/* Comprobacion de que el inodo no existe */
+
+	/*int fd = 1;
+	int a = lseekFile(fd, 3L, FS_SEEK_CUR);
+	
+	
+	printSystem();
+	//closeFile(fd);
+
+	if (a != -1)
+	{
+   		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.10.5 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+   		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.10.5 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+*/
+
+	/****************************************************************
+	*                                                               *
+	*                           TEST F1.11                          *
+	*                                                               *
+	*****************************************************************
+	*						  TEST F1.11.1 						    *
+	****************************************************************/
+    /* Prueba de verificar la  integridad a un fichero no existente */
+	
+/*	int a = checkFile ("/test1.txt");
+
+	printSystem();
+
+	if (a != -2)
+	{
+   		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.11.1 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+   		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.11.1 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+*/
+
+
+	/****************************************************************
+	*						  TEST F1.11.2						    *
+	****************************************************************/
+	/* Prueba de comprobar integridad a un fichero ya abierto al que previamente 
+	se le ha asignado integridad */
+
+/*	createFile("/test1.txt");
+	int fd = openFile("/test1.txt");
+	char *buffer1 = "esto es una prueba";
+	ret = writeFile(fd, buffer1, strlen(buffer1)+1);
+	int a = includeIntegrity ("/test1.txt");
+	int b = checkFile ("/test1.txt");
+	
+	printSystem();
+
+	if (a != 0 && b !=0)
+	{
+   		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.11.2 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+   		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.11.2 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+*/
+
+	/****************************************************************
+	*						  TEST F1.11.3						    *
+	****************************************************************/
+	/* Prueba de comprobar integridad a un fichero no abierto al que previamente 
+	se le ha asignado integridad */
+
+	/*createFile("/test1.txt");
+	int fd = openFile("/test1.txt");
+	char *buffer1 = "esto es una prueba";
+	ret = writeFile(fd, buffer1, strlen(buffer1)+1);
+	closeFile(fd);
+	int a = includeIntegrity ("/test1.txt");
+	int b = checkFile ("/test1.txt");
+	
+	printSystem();
+
+	if (a != 0 && b !=0)
+	{
+   		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.11.3 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+   		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.11.3 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+*/
+
+	/****************************************************************
+	*						  TEST F1.11.4						    *
+	****************************************************************/
+	/* Prueba de comprobar integridad a un fichero abierto al que previamente 
+	se le ha asignado integridad, la integridad sera diferente */
+
+/*	createFile("/test1.txt");
+	int fd = openFile("/test1.txt");
+	char *buffer1 = "esto es una prueba";
+	char *buffer2 = "Texto para corromper el fichero";
+	ret = writeFile(fd, buffer1, strlen(buffer1)+1);
+	int a = includeIntegrity ("/test1.txt");
+	ret = writeFile(fd, buffer2, strlen(buffer2)+1);
+	
+	int b = checkFile ("/test1.txt");
+	
+	printSystem();
+
+	if (a != 0 && b == -1)
+	{
+   		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.11.4 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+   		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.11.4 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+*/
+
+	/****************************************************************
+	*						  TEST F1.11.5						    *
+	****************************************************************/
+	/* Prueba de comprobar integridad a un fichero no abierto al que previamente 
+	se le ha asignado integridad, la integridad sera diferente */
+
+/*	createFile("/test1.txt");
+	int fd = openFile("/test1.txt");
+	char *buffer1 = "esto es una prueba";
+	char *buffer2 = "Texto para corromper el fichero";
+	ret = writeFile(fd, buffer1, strlen(buffer1)+1);
+	int a = includeIntegrity ("/test1.txt");
+	ret = writeFile(fd, buffer2, strlen(buffer2)+1);
+	closeFile(fd);
+	int b = checkFile ("/test1.txt");
+	
+	printSystem();
+
+	if (a != 0 && b == -1)
+	{
+   		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.11.5 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+   		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.11.5 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+*/
+
+	/****************************************************************
+	*                                                               *
+	*                           TEST F1.12                          *
+	*                                                               *
+	*****************************************************************
+	*						  TEST F1.12.1 						    *
+	****************************************************************/
+    /* Prueba de anadir integridad a un fichero no existente */
+
+	/*int a = includeIntegrity ("/test1.txt");
+
+	printSystem();
+
+	if (a != -1)
+	{
+   		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.12.1 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+   		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.12.1 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+*/
+
+	/****************************************************************
+	*						  TEST F1.12.2						    *
+	****************************************************************/
+	/* Prueba de anadir integridad a un fichero ya abierto */
+
+	/*createFile("/test1.txt");
+	int fd = openFile("/test1.txt");
+	char *buffer1 = "esto es una prueba";
+	ret = writeFile(fd, buffer1, strlen(buffer1)+1);
+	printSystem();
+	int a = includeIntegrity ("/test1.txt");
+	printSystem();
+
+	if (a != 0)
+	{
+   		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.12.2 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+   		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.12.2 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+*/
+
+	/****************************************************************
+	*						  TEST F1.12.3						    *
+	****************************************************************/
+	/* Prueba de anadir integridad a un fichero sin abrir */
+
+	/*createFile("/test1.txt");
+	int fd = openFile("/test1.txt");
+	char *buffer1 = "esto es una prueba";
+	ret = writeFile(fd, buffer1, strlen(buffer1)+1);
+	closeFile(fd);
+	int a = includeIntegrity ("/test1.txt");
+	printSystem();
+
+	if (a != 0)
+	{
+   		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.12.3 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+   		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.12.3 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+*/
+
+
+	/****************************************************************
+	*                                                               *
+	*                           TEST F1.13                           *
+	*                                                               *
+	*****************************************************************
+	*						  TEST F1.13.1 						    *
+	****************************************************************/
+    /* Prueba basica para abrir un archivo existente y su comprobacion de integridad. 
+	Al no haber iniciado su integridad retorna el valor -3*/
+
+	/*int x;
+	createFile("/test1.txt");
+
+	x = openFileIntegrity("/test1.txt");
+	printSystem();
+	if (x != -3)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.13.1  ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.13.1  ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+*/
+	
+
+	/****************************************************************
+	*						  TEST F1.13.2						    *
+	****************************************************************/
+    /* Prueba basica para abrir un archivo ya abierto anteriormente mediante  openFileIntegrity*/
+
+	/*int z;
+	createFile("/test1.txt");
+	int fd = openFile("/test1.txt");
+	char *buffer1 = "esto es una prueba";
+	ret = writeFile(fd, buffer1, strlen(buffer1)+1);
+	closeFile(fd);
+	includeIntegrity("/test1.txt");
+	openFileIntegrity("/test1.txt");
+	z = openFileIntegrity("/test1.txt");
+	if (z == -3)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.13.2 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+
+	}
+	else {
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.13.2 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}*/
+
+
+	/****************************************************************
+	*						  TEST F1.13.3						    *
+	****************************************************************/
+    /* Prueba basica para abrir un archivo inexistente */
+
+	/*int p;
+
+	p = openFileIntegrity("/test7.txt");
+	if (p == -1)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.13.3 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+
+	}
+	else{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.13.3 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}*/
+
+
+	/****************************************************************
+	*						TEST F1.13.4						    *
+	****************************************************************/
+	/* Prueba en la cual se abre un archivo a través del enlace simbolico y mediante openFileIntegrity*/
+	
+	/*int a;
+	createFile("/test1.txt");
+	int fd = openFile("/test1.txt");
+	char *buffer1 = "esto es una prueba";
+	ret = writeFile(fd, buffer1, strlen(buffer1)+1);
+	closeFile(fd);
+	includeIntegrity("/test1.txt");
+	createLn("/test1.txt","enlace1");
+	a = openFileIntegrity("enlace1");
+	printSystem();
+
+
+	if (a == -3)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.13.4  ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.13.4  ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+*/
+
+	/****************************************************************
+	*						TEST F1.13.5						    *
+	****************************************************************/
+	/* Prueba en la cual se abre un archivo comprobando su integridad openFileIntegrity*/
+	
+	/*int a;
+	createFile("/test1.txt");
+	int fd = openFile("/test1.txt");
+	char *buffer1 = "esto es una prueba";
+	ret = writeFile(fd, buffer1, strlen(buffer1)+1);
+	closeFile(fd);
+	includeIntegrity("/test1.txt");
+	a = openFileIntegrity("/test1.txt");
+	printSystem();
+
+	if (a != 0)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.13.5  ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.13.5  ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
 	*/
+
+	/****************************************************************
+	*						TEST F1.13.6						    *
+	****************************************************************/
+	/* Prueba en la cual se abre un archivo comprobando su integridad openFileIntegrity*/
+	
+	/*int a;
+	createFile("/test1.txt");
+	int fd = openFile("/test1.txt");
+	char *buffer1 = "esto es una prueba";
+	char *buffer2 = "Texto para corromper el fichero";
+	ret = writeFile(fd, buffer1, strlen(buffer1)+1);
+	includeIntegrity("/test1.txt");
+	ret = writeFile(fd, buffer2, strlen(buffer2)+1);
+	closeFile(fd);
+	
+	a = openFileIntegrity("/test1.txt");
+	printSystem();
+
+	if (a != -2)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.13.6  ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.13.6  ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+
+*/
+
+	/****************************************************************
+	*                                                               *
+	*                           TEST F1.14                          *
+	*                                                               *
+	*****************************************************************
+	*						  TEST F1.14.1 						    *
+	****************************************************************/
+    /* Prueba basica para cerrar un descriptor de fichero y calcular su integridad*/
+
+	/*createFile("/test1.txt");
+	int fd = openFile("/test1.txt");
+	char *buffer1 = "esto es una prueba";
+	ret = writeFile(fd, buffer1, strlen(buffer1)+1);
+	closeFile(fd);
+	includeIntegrity("/test1.txt");
+
+	openFileIntegrity("/test1.txt");
+	int e = closeFileIntegrity(0);
+	printSystem();
+	if (e == -1)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.14.1  ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.14.1  ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+*/
+
+	/****************************************************************
+	*						  TEST F1.14.2 						    *
+	****************************************************************/
+    /* Prueba basica para cerrar un descriptor de fichero ya cerrado o no inicializado 
+	mediante closeFileIntegrity*/
+
+	/*int g = closeFileIntegrity(2);
+	if (g == -1)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.14.2 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+
+	}
+	else{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.14.2 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}*/
+
+
+	/****************************************************************
+	*						  TEST F1.14.3 						    *
+	****************************************************************/
+    /* Prueba basica para cerrar descriptor de fichero fuera de inodo */
+
+	
+	/*int h = closeFileIntegrity(60);
+	if (h == -1)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.14.3 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+
+	}
+	else{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.14.3 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}*/
+
+	/****************************************************************
+	*						TEST F1.14.4						    *
+	****************************************************************/
+	/* Prueba en la cual se cierra un archivo a través del enlace simbolico mediante integridad*/
+
+	/*
+	createFile("/test1.txt");
+	createLn("/test1.txt","enlace1");
+	int fd = openFile("enlace1");
+	char *buffer1 = "esto es una prueba";
+	ret = writeFile(0, buffer1, strlen(buffer1)+1);
+	closeFile(fd);
+	includeIntegrity("/test1.txt");
+	openFileIntegrity("enlace1");
+	int a = closeFileIntegrity(1);
+	printf("%d:  \n", a);
+	printSystem();
+
+	if (a == -1 || a == -2)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.14.4  ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.14.4  ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);*/
+	
+
+	
 
 
 	/****************************************************************
@@ -904,9 +1453,9 @@ int main()
 	****************************************************************/
 	/* Prueba en la que se crea un enlace simbolico de un archivo existente*/
 
-	/*int x;
+/*
 	createFile("/test1.txt");
-	x = createLn("/test1.txt","enlace1");
+	int x = createLn("/test1.txt","enlace1");
 	printSystem();
 	if (x != 0)
 	{
@@ -920,10 +1469,10 @@ int main()
 	*						  TEST F1.15.2						    *
 	****************************************************************/
 	/* Prueba en la que se crea un enlace simbolico de un archivo inexistente*/
-	/*
-	int x;
+
+/*
 	createFile("/test1.txt");
-	x = createLn("/test8.txt","enlace1");
+	int x = createLn("/test8.txt","enlace1");
 	printSystem();
 	if (x != -1)
 	{
@@ -931,49 +1480,49 @@ int main()
 		return -1;
 	}
 	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.15.2 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
-	*/
+*/	
+
 	/****************************************************************
 	*						TEST F1.15.3 						    *
 	****************************************************************/
 	/* Prueba en la cual no hay inodos disponibles.
 	Para ello llenaremos el mapa de inodos, por lo que createLn deberá devolver -2 */
-
-	/*fullInodeMap(); //Pone a 1 a todas las posiciones del mapa de inodos
-	int a;
+/*
+	fullInodeMap(); //Pone a 1 a todas las posiciones del mapa de inodos
 	createFile("/test1.txt");
-	a = createLn("/test1.txt","enlace1");
+	int a = createLn("/test1.txt","enlace1");
 
 
-	if (a == -2)
+	if (a == -1)
 	{
 		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.15.3 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
 	}
 	else {
 		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.15.3 ", ANSI_COLOR_RED, "FAIL\n", ANSI_COLOR_RESET);
 		return -1;
-	}*/
-
+	}
+*/
 	/****************************************************************
 	*						TEST F1.15.4						    *
 	****************************************************************/
 	/* Prueba en la cual no hay bloques disponibles.
 	Para ello llenaremos el mapa de bloques, por lo que createLn deberá devolver -2 */
-
-	/*fullBlockMap();
+/*
+	fullBlockMap();
 	int a;
 	createFile("/test1.txt");
 	a = createLn("/test1.txt","enlace1");
 
 
-	if (a == -2)
+	if (a == -1)
 	{
 		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.15.4 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
 	}
 	else {
 		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.15.4 ", ANSI_COLOR_RED, "FAIL\n", ANSI_COLOR_RESET);
 		return -1;
-	}*/
-
+	}
+*/
 	/****************************************************************
 	*						TEST F1.15.5						    *
 	****************************************************************/
@@ -1001,7 +1550,7 @@ int main()
 	****************************************************************/
 	/* Prueba en la cual se repite el nombre de un enlace que se desea crear.
 	C y D devolverán -1, ya que contienen nombres repetidos y no pueden crearse*/
-	/*
+/*
 	int a,b,c,d,e;
 
 	a = createFile("/test1.txt");
@@ -1015,13 +1564,96 @@ int main()
 
 	if (a == 0 && b == 0 && c == -1 && d == 0 && e == -1)
 	{
-		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.15,6 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.15.6 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
 	}
 	else {
 		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.15.6 ", ANSI_COLOR_RED, "FAIL\n", ANSI_COLOR_RESET);
 		return -1;
 	}
-	*/
+*/
+
+	/****************************************************************
+	*						TEST F1.15.7 						    *
+	****************************************************************/
+	/* Prueba en la que si se decide escribir en un enlace simbolico se escriba 
+	en su fichero correspondiente*/
+	
+	/*int x;
+	createFile("/test1.txt");
+	x = createLn("/test1.txt","enlace1");
+
+	openFile("/test1.txt");
+	char *buffer1 = "esto es una prueba";
+	ret = writeFile(1, buffer1, strlen(buffer1)+1);
+
+	printSystem();
+
+	if (x == 0 && ret > 0)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.15.7 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+	}
+	else {
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.15.7 ", ANSI_COLOR_RED, "FAIL\n", ANSI_COLOR_RESET);
+		return -1;
+	}*/
+
+	/****************************************************************
+	*						TEST F1.15.8 						    *
+	****************************************************************/
+	/* Prueba en la que si se decide leer en un enlace simbolico se lea de su 
+	fichero correspondiente*/
+/*	
+	ret = createFile("/test1.txt");
+	int x = createLn("/test1.txt","enlace1");
+
+	int fd = openFile("/test1.txt");
+	char *buffer1 = "esto es una prueba";
+	writeFile(fd, buffer1, strlen(buffer1)+1);
+	closeFile(fd);
+	
+	char lectura[4096];
+	openFile("/test1.txt");
+	ret = readFile(1, lectura, 18);
+
+	printf("La lectura es: %s\n", lectura);
+
+	printSystem();
+
+	if (x == 0 && ret > 0)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.15.8 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+	}
+	else {
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.15.8 ", ANSI_COLOR_RED, "FAIL\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+*/
+	/****************************************************************
+	*						TEST F1.15.9 						    *
+	****************************************************************/
+	/* Prueba en la que si se decide utilizar la funcion lseekFile en un enlace simbolico se cambie el puntero 
+	en su fichero correspondiente*/
+/*	
+	int x;
+	createFile("/test1.txt");
+	x = createLn("/test1.txt","enlace1");
+	int fd = openFile("/test1.txt");
+	char *buffer1 = "esto es una prueba";
+	ret = writeFile(fd, buffer1, strlen(buffer1)+1);
+	int a = lseekFile(1, 3L, FS_SEEK_CUR);
+
+	printSystem();
+
+	if (x == 0 && a == 0)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.15.9 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+	}
+	else {
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.15.9 ", ANSI_COLOR_RED, "FAIL\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+*/
+
 	/****************************************************************
 	*                                                               *
 	*                           TEST F1.16                          *
@@ -1070,7 +1702,7 @@ int main()
 	*						TEST F1.16.3						    *
 	****************************************************************/
 	/* Prueba basica de creacion de 1 archivo y eliminacion de un archivo existente,
-	a través de la funcion de eliminar simbolos removeLn */
+	a través de la funcion de eliminar simbolos removeLn, no debe permitirse */
 	/*
 	int x;
 	createFile("/test1.txt");
@@ -1086,6 +1718,11 @@ int main()
 	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST F1.16.3 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
 
 	*/
+
+
+
+
+
 
 
 	/****************************************************************
