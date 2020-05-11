@@ -420,7 +420,7 @@ int readFile(int fileDescriptor, void *buff, int numBytes)
       	}
 
 		if (i == aux_bloque) {
-			int l = BLOCK_SIZE - (posicion % BLOCK_SIZE); // Longitud a escribir con memmove
+			int l = BLOCK_SIZE - (posicion % BLOCK_SIZE); // Longitud a leer con memmove
 			if(posicion % BLOCK_SIZE == 0) {
 				l = BLOCK_SIZE;
 			} 
