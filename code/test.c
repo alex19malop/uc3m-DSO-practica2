@@ -1281,7 +1281,8 @@ int main()
 	/****************************************************************
 	*						TEST F1.13.4						    *
 	****************************************************************/
-	/* Prueba en la cual se abre un archivo a través del enlace simbolico y mediante openFileIntegrity*/
+	/* Prueba en la cual se abre un archivo a través del enlace simbolico
+	 y mediante openFileIntegrity*/
 	
 	/*int a;
 	createFile("/test1.txt");
@@ -1720,11 +1721,152 @@ int main()
 	*/
 
 
+	/****************************************************************
+	*                                                               *
+	*                           TEST NF10                           *
+	*                                                               *
+	*****************************************************************
+	*						  TEST NF10.1 						    *
+	****************************************************************/
+    /* Si se quiere abrir un fichero sin integridad con las funciones de integridad,
+	debera anyadirse su integridad previamente, funcionamiento con error */
+
+	/*createFile("/test1.txt");
+	int a = openFileIntegrity("/test1.txt");
 
 
+	if (a != -3)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST NF10.1 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST NF10.1 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+*/
+
+	/****************************************************************
+	*						  TEST NF10.2 						    *
+	****************************************************************/
+    /* Si se quiere abrir un fichero sin integridad con las funciones de integridad,
+	debera anyadirse su integridad previamente, funcionamiento sin error */
+/*
+	createFile("/test1.txt");
+	int fd = openFile("/test1.txt");
+	char *buffer1 = "esto es una prueba";
+	ret = writeFile(fd, buffer1, strlen(buffer1)+1);
+	closeFile(fd);
+	includeIntegrity("/test1.txt");
+	int a = openFileIntegrity("/test1.txt");
+	printSystem();
 
 
+	if (a != 0)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST NF10.2 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST NF10.2 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+*/
 
+	/****************************************************************
+	*                                                               *
+	*                           TEST NF11                           *
+	*                                                               *
+	*****************************************************************
+	*						  TEST NF11.1 						    *
+	****************************************************************/
+	/*Un fichero no se puede abrir con la funcion de integridad (openFileIntegrity) y
+	 cerrarse sin integridad (closeFile). Prueba de error*/
+/*
+	createFile("/test1.txt");
+	int fd = openFile("/test1.txt");
+	char *buffer1 = "esto es una prueba";
+	ret = writeFile(fd, buffer1, strlen(buffer1)+1);
+	closeFile(fd);
+	includeIntegrity("/test1.txt");
+	int a = openFileIntegrity("/test1.txt");
+	int b = closeFile(fd);
+	printSystem();
+
+
+	if (a != 0 && b != -1)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST NF11.1 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST NF11.1 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+*/
+
+	/*****************************************************************
+	*						  TEST NF11.2 						    *
+	****************************************************************/
+	/*Un fichero no se puede abrir con la funcion de integridad (openFileIntegrity) y
+	 cerrarse sin integridad (closeFile). Prueba de correcto funcionamiento*/
+/*
+	createFile("/test1.txt");
+	int fd = openFile("/test1.txt");
+	char *buffer1 = "esto es una prueba";
+	ret = writeFile(fd, buffer1, strlen(buffer1)+1);
+	closeFile(fd);
+	includeIntegrity("/test1.txt");
+	int a = openFileIntegrity("/test1.txt");
+	int b = closeFileIntegrity(fd);
+	printSystem();
+
+
+	if (a != 0 && b != 0)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST NF11.2 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST NF11.2 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+*/ 
+	/****************************************************************
+	*                                                               *
+	*                           TEST NF12                           *
+	*                                                               *
+	*****************************************************************
+	*						  TEST NF12.1 						    *
+	****************************************************************/
+	/*Un fichero no se puede abrir con la funcion sin integridad (openFile) y
+	cerrarse con ella (closeFileIntegrity). Prueba de error*/
+
+/*	
+	createFile("/test1.txt");
+	int fd = openFile("/test1.txt");
+	int a = closeFileIntegrity(fd);
+	printSystem();
+
+	if (a != -1)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST NF12.1 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST NF12.1 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+*/
+
+	/****************************************************************
+	*						  TEST NF12.2 						    *
+	****************************************************************/
+	/*Un fichero no se puede abrir con la funcion sin integridad (openFile) y
+	cerrarse con ella (closeFileIntegrity). Prueba de correcto funcionamiento*/
+/*	
+	createFile("/test1.txt");
+	int fd = openFile("/test1.txt");
+	char *buffer1 = "esto es una prueba";
+	ret = writeFile(fd, buffer1, strlen(buffer1)+1);
+	closeFile(fd);
+	includeIntegrity("/test1.txt");
+	int a = openFileIntegrity("/test1.txt");
+	int b = closeFileIntegrity(fd);
+	printSystem();
+	
+	if (a != 0 && b != 0)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST NF12.2 ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST NF12.2 ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+*/
 	/****************************************************************
 	*                                                               *
 	*                           TEST F1.3                           *
